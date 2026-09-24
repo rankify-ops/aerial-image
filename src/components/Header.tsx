@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { nav, site } from "@/content/site";
 import { Logo } from "./Logo";
 import { Arrow } from "./ui";
@@ -12,6 +13,8 @@ import { Arrow } from "./ui";
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  // Variation 2 opens straight onto footage, so the pill is glass from the first frame.
+  const overVideo = usePathname().startsWith("/v2");
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24);
@@ -33,7 +36,7 @@ export function Header() {
       <div className={`wrap transition-[padding] duration-500 ${scrolled ? "pt-3" : "pt-5"}`}>
         <div
           className={`flex h-[62px] items-center justify-between gap-6 rounded-full pl-5 pr-2 transition-all duration-500 ${
-            scrolled || open ? "glass" : "border border-transparent"
+            scrolled || open || overVideo ? "glass" : "border border-transparent"
           }`}
         >
           <a href="#top" aria-label="Aerial Image — home" onClick={() => setOpen(false)} className="flex items-center gap-3">

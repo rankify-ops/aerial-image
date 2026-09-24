@@ -251,3 +251,97 @@
   input:checked + .chip { background: var(--ink); border-color: var(--ink); color: var(--paper); }
   input:focus-visible + .chip { outline: 2px solid var(--ink); outline-offset: 2px; }
 }
+
+/*
+ * ── Variation 2: "neu glass" ─────────────────────────────────────────────
+ * Pearl frosted panels with inner highlights over footage, fine serif display
+ * (Instrument Serif). Everything below is either a new class or scoped to .v2,
+ * so the original page (/) renders exactly as before.
+ * Only the unprefixed backdrop-filter is written (Lightning CSS strips it if
+ * both are hand-written).
+ */
+@layer components {
+  .serif { font-family: var(--font-serif), Georgia, serif; font-weight: 400; }
+  .serif em { font-style: italic; }
+
+  .nglass {
+    background: linear-gradient(155deg, rgb(255 255 255 / 0.9), rgb(244 244 241 / 0.72) 55%, rgb(255 255 255 / 0.82));
+    backdrop-filter: blur(32px) saturate(1.4);
+    border: 1px solid rgb(255 255 255 / 0.75);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.95),
+      inset 0 -1px 0 rgb(13 15 18 / 0.05),
+      0 1px 2px rgb(13 15 18 / 0.06),
+      0 30px 70px -30px rgb(13 15 18 / 0.45);
+  }
+
+  /* Soft neumorphic chip / orb / button — the app-UI pills in the reference. */
+  .npill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding-inline: 12px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #fff, #efeeea);
+    box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgb(13 15 18 / 0.08), 0 4px 10px -6px rgb(13 15 18 / 0.3);
+  }
+  .npill-ink { background: var(--ink); color: var(--paper); box-shadow: 0 4px 12px -6px rgb(13 15 18 / 0.6); }
+
+  .norb {
+    border-radius: 999px;
+    background: radial-gradient(120% 120% at 30% 20%, #fff 0%, #f1f0ec 55%, #e4e3de 100%);
+    box-shadow: inset 0 1px 0 #fff, inset 0 -2px 4px rgb(13 15 18 / 0.05), 0 2px 4px rgb(13 15 18 / 0.08), 0 10px 20px -12px rgb(13 15 18 / 0.45);
+  }
+
+  .nbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 54px;
+    padding: 0 22px 0 11px;
+    border-radius: 999px;
+    color: var(--ink);
+    font-family: var(--font-mono-face), ui-monospace, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background: linear-gradient(180deg, #fff, #eeede9);
+    box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgb(13 15 18 / 0.08), 0 10px 24px -14px rgb(13 15 18 / 0.5);
+    transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .nbtn:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgb(13 15 18 / 0.08), 0 16px 30px -14px rgb(13 15 18 / 0.55); }
+  .nbtn .arrow { transition: transform 0.4s var(--ease); }
+  .nbtn:hover .arrow { transform: translateX(3px); }
+
+  .scroll-dot { animation: scrollDot 1.8s var(--ease) infinite; }
+  @keyframes scrollDot { 0% { transform: translate(-50%, 0); opacity: 1; } 70% { transform: translate(-50%, 12px); opacity: 0; } 100% { opacity: 0; } }
+
+  /* Pearl ground for the rest of the v2 page. */
+  .v2 {
+    background:
+      radial-gradient(1100px 700px at 8% 12%, rgb(255 255 255 / 0.9), transparent 60%),
+      radial-gradient(900px 800px at 92% 38%, #e2e4e8, transparent 65%),
+      radial-gradient(1000px 700px at 20% 78%, #efece6, transparent 60%),
+      #ebeae6;
+  }
+  .v2 section.bg-white, .v2 section.bg-paper, .v2 .bg-paper:not(form) { background: transparent; }
+  .v2 .display, .v2 .h2 { font-family: var(--font-serif), Georgia, serif; font-weight: 400; letter-spacing: -0.02em; line-height: 0.96; }
+  .v2 .display .dim, .v2 .h2 .dim { font-style: italic; }
+
+  /* Every flat white card on the shared sections becomes neu glass. */
+  .v2 .border-rule.bg-white,
+  .v2 form.bg-paper {
+    background: linear-gradient(155deg, rgb(255 255 255 / 0.8), rgb(246 246 243 / 0.5));
+    backdrop-filter: blur(20px) saturate(1.4);
+    border-color: rgb(255 255 255 / 0.85);
+    box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgb(13 15 18 / 0.05), 0 24px 60px -32px rgb(13 15 18 / 0.35);
+  }
+  .v2 .border-rule { border-color: rgb(13 15 18 / 0.08); }
+  .v2 .chip { background: linear-gradient(180deg, #fff, #efeeea); border-color: transparent; box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgb(13 15 18 / 0.08); }
+  .v2 input:checked + .chip { background: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) { .scroll-dot { animation: none; } }
+}
