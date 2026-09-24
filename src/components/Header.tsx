@@ -1,20 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { nav, site } from "@/content/site";
 import { Logo } from "./Logo";
+import { MegaPanel, type MegaKey } from "./MegaMenu";
 import { Arrow } from "./ui";
 
 /*
  * Floating glass pill. Sits clear of the page at the top and tightens once
  * you scroll. Always visible — no hide-on-scroll.
+ *
+ * Variation 1 (/) gets a mega menu: hovering a nav item drops one glass sheet
+ * out of the pill with that item's panel. Hover intent is debounced so the
+ * sheet doesn't flicker crossing the gap; touch/keyboard open it on click and
+ * a second click follows the link. Esc or the backdrop closes it.
  */
+const KEYS: Record<string, MegaKey> = { "#fpv": "fpv", "#work": "work", "#services": "services", "#credentials": "credentials" };
+
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   // Variation 2 opens straight onto footage, so the pill is glass from the first frame.
   const overVideo = usePathname().startsWith("/v2");
+  const mega = !overVideo;
+
+  const [menu, setMenu] = useState<MegaKey | null>(null);
+  // Keeps the last panel mounted while the sheet animates shut.
+  const [shown, setShown] = useState<MegaKey | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const show = (k: MegaKey) => {
+    clearTimeout(timer.current);
+    setMenu(k);
+    setShown(k);
+  };
+  const hide = (delay = 0) => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      setMenu(null);
+      timer.current = setTimeout(() => setShown(null), 450);
+    }, delay);
+  };
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24);
@@ -31,15 +58,39 @@ export function Header() {
     return () => window.removeEventListener("keydown", esc);
   }, [open]);
 
+  useEffect(() => {
+    if (!menu) return;
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && hide();
+    window.addEventListener("keydown", esc);
+    return () => window.removeEventListener("keydown", esc);
+  }, [menu]);
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const solid = scrolled || open || overVideo || !!menu;
+
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      <div className={`wrap transition-[padding] duration-500 ${scrolled ? "pt-3" : "pt-5"}`}>
+      {/* Backdrop behind the mega sheet */}
+      {mega && (
+        <div
+          aria-hidden
+          onClick={() => hide()}
+          className={`fixed inset-0 -z-10 hidden bg-ink/10 backdrop-blur-[3px] transition-opacity duration-500 lg:block ${menu ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        />
+      )}
+
+      <div
+        className={`wrap transition-[padding] duration-500 ${scrolled ? "pt-3" : "pt-5"}`}
+        onMouseEnter={() => menu && clearTimeout(timer.current)}
+        onMouseLeave={() => mega && menu && hide(180)}
+      >
         <div
           className={`flex h-[62px] items-center justify-between gap-6 rounded-full pl-5 pr-2 transition-all duration-500 ${
-            scrolled || open || overVideo ? "glass" : "border border-transparent"
+            solid ? "glass" : "border border-transparent"
           }`}
         >
-          <a href="#top" aria-label="Aerial Image — home" onClick={() => setOpen(false)} className="flex items-center gap-3">
+          <a href="#top" aria-label="Aerial Image — home" onClick={() => { setOpen(false); hide(); }} className="flex items-center gap-3">
             <Logo />
             <span className="mono hidden text-[10px] leading-[1.4] text-ink sm:block">
               Aerial
@@ -49,22 +100,43 @@ export function Header() {
           </a>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
-            {nav.map(([label, href]) => (
-              <a
-                key={href}
-                href={href}
-                className="mono rounded-full px-4 py-2.5 text-ink-2 transition-colors hover:bg-ink/5 hover:text-ink"
-              >
-                {label}
-              </a>
-            ))}
+            {nav.map(([label, href]) => {
+              const k = KEYS[href];
+              const on = mega && menu === k;
+              return (
+                <a
+                  key={href}
+                  href={href}
+                  aria-expanded={mega ? on : undefined}
+                  aria-controls={mega ? "mega-sheet" : undefined}
+                  onMouseEnter={() => mega && window.matchMedia("(hover: hover)").matches && show(k)}
+                  onClick={(e) => {
+                    if (!mega) return;
+                    if (menu !== k) {
+                      e.preventDefault();
+                      show(k);
+                    } else hide();
+                  }}
+                  className={`mono flex items-center gap-2 rounded-full px-4 py-2.5 transition-colors ${
+                    on ? "bg-ink text-paper" : "text-ink-2 hover:bg-ink/5 hover:text-ink"
+                  }`}
+                >
+                  {label}
+                  {mega && (
+                    <svg width="8" height="5" viewBox="0 0 8 5" aria-hidden className={`transition-transform duration-300 ${on ? "rotate-180" : ""}`}>
+                      <path d="M1 1l3 3 3-3" stroke="currentColor" fill="none" strokeWidth="1.2" />
+                    </svg>
+                  )}
+                </a>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-2">
             <a href={`mailto:${site.email}`} className="mono hidden px-3 text-ink-2 hover:text-ink xl:block">
               {site.email}
             </a>
-            <a href="#contact" className="btn btn-primary hidden h-[46px] sm:inline-flex">
+            <a href="#contact" onClick={() => hide()} className="btn btn-primary hidden h-[46px] sm:inline-flex">
               Enquiries <Arrow />
             </a>
             <button
@@ -81,6 +153,21 @@ export function Header() {
             </button>
           </div>
         </div>
+
+        {/* Mega sheet (desktop, variation 1) */}
+        {mega && (
+          <div id="mega-sheet" className={`mega-sheet mt-2 hidden lg:block ${menu ? "is-open" : ""}`} role="region" aria-label="Menu">
+            {shown && <MegaPanel which={shown} close={() => hide()} />}
+            <div className="flex items-center justify-between border-t border-rule px-8 py-4">
+              <p className="mono flex items-center gap-3 text-[10px] text-ink-3">
+                <span className="rec-dot" /> FPV • Videography • Photography • Commercial
+              </p>
+              <a href={`mailto:${site.email}`} className="mono text-[10.5px] text-ink hover:text-rec-ink">
+                {site.email}
+              </a>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile menu */}

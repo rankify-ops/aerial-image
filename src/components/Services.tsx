@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { services } from "@/content/site";
 import { Arrow, Kicker, Loop, Photo, Reveal } from "./ui";
+
+/** Deep-link from the mega menu: open a given tab + group, then scroll here. */
+export const SERVICE_EVT = "ai:service";
+export function openService(tab: number, active: number) {
+  window.dispatchEvent(new CustomEvent(SERVICE_EVT, { detail: { tab, active } }));
+}
 
 /*
  * Creative / Commercial toggle, then an index of service groups. Hovering
@@ -12,6 +18,16 @@ import { Arrow, Kicker, Loop, Photo, Reveal } from "./ui";
 export function Services() {
   const [tab, setTab] = useState(0);
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const on = (e: Event) => {
+      const d = (e as CustomEvent<{ tab: number; active: number }>).detail;
+      setTab(d.tab);
+      setActive(d.active);
+    };
+    window.addEventListener(SERVICE_EVT, on);
+    return () => window.removeEventListener(SERVICE_EVT, on);
+  }, []);
   const cat = services[tab];
   const g = cat.groups[active] ?? cat.groups[0];
 
