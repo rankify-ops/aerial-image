@@ -1,0 +1,16 @@
+/node_modules
+/.next/
+/out/
+/build
+.DS_Store
+*.pem
+npm-debug.log*
+.env*
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# Raw source media (YouTube masters, full-size WP uploads, scrapes) — hundreds
+# of MB. Regenerate public/ from them with scripts/media.sh + scripts/images.mjs.
+/assets-raw/
+/_source/

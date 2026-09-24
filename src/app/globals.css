@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+/*
+ * Aerial Image
+ * ────────────
+ * Light, digital, cinematic. Paper ground, near-black ink, and the footage
+ * does the shouting. The only colour is REC red, borrowed from the FPV
+ * goggle OSD: the recording dot, index numerals, one live hairline. Every
+ * small label is tracked mono, as if it were telemetry.
+ */
+
+:root {
+  --ink: #0d0f12;
+  --ink-2: #3d424a;
+  --ink-3: #80858d;
+  --paper: #f3f3ef;
+  --white: #ffffff;
+  --mist: #e9e9e4;
+  --rule: #dcdcd6;
+  --rule-2: #c6c6bf;
+
+  --rec: #ff3b1f;
+  /* REC red dark enough for small text on paper. */
+  --rec-ink: #c42a12;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-paper: var(--paper);
+  --color-mist: var(--mist);
+  --color-rule: var(--rule);
+  --color-rule-2: var(--rule-2);
+  --color-rec: var(--rec);
+  --color-rec-ink: var(--rec-ink);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-mono-face);
+  --default-transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer components {
+  html {
+    overflow-x: hidden;
+    background: var(--paper);
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink-2);
+    font-family: var(--font-inter), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  h1, h2, h3, h4 { color: var(--ink); font-weight: 400; letter-spacing: -0.03em; }
+  ::selection { background: var(--ink); color: var(--paper); }
+
+  .mono {
+    font-family: var(--font-mono-face), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+  @media (min-width: 640px) { .wrap { padding-inline: 28px; } }
+  @media (min-width: 1024px) { .wrap { padding-inline: 44px; } }
+
+  .mega {
+    font-size: clamp(52px, 10.5vw, 188px);
+    line-height: 0.86;
+    letter-spacing: -0.055em;
+  }
+  .display {
+    font-size: clamp(40px, 6vw, 96px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+  }
+  .h2 {
+    font-size: clamp(32px, 4.2vw, 64px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+  .dim { color: var(--ink-3); }
+
+  .rec-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 99px;
+    background: var(--rec);
+    box-shadow: 0 0 0 3px rgb(255 59 31 / 0.18);
+  }
+
+  /* Buttons: pill, mono, skewed hover sweep. Primary is ink — never red with white text. */
+  .btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 54px;
+    padding-inline: 26px;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    font-family: var(--font-mono-face), ui-monospace, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.45s var(--ease), border-color 0.45s var(--ease);
+  }
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: -2px -20%;
+    z-index: -1;
+    transform: translateX(-110%) skewX(-24deg);
+    transition: transform 0.6s var(--ease);
+  }
+  .btn:hover::before { transform: translateX(0) skewX(-24deg); }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary::before { background: #2a2e35; }
+  .btn-ghost { color: var(--ink); background: transparent; border-color: var(--rule-2); }
+  .btn-ghost::before { background: var(--ink); }
+  .btn-ghost:hover { color: var(--paper); border-color: var(--ink); }
+  .btn-glass {
+    color: #fff;
+    border-color: rgb(255 255 255 / 0.35);
+    background: rgb(255 255 255 / 0.12);
+    backdrop-filter: blur(14px) saturate(1.5);
+  }
+  .btn-glass::before { background: #fff; }
+  .btn-glass:hover { color: var(--ink); }
+  .btn .arrow { transition: transform 0.4s var(--ease); }
+  .btn:hover .arrow { transform: translateX(4px); }
+
+  /* Frosted glass. */
+  .glass {
+    background: rgb(243 243 239 / 0.7);
+    backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgb(255 255 255 / 0.6);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 10px 40px -12px rgb(13 15 18 / 0.18);
+  }
+  .glass-dark {
+    background: rgb(13 15 18 / 0.32);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgb(255 255 255 / 0.16);
+    color: #fff;
+  }
+
+  /* Engineering grid behind the hero. */
+  .grid-bg {
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse at 50% 0%, #000 10%, transparent 70%);
+  }
+
+  /* OSD overlay on the hero footage. */
+  .osd { position: absolute; inset: 0; pointer-events: none; color: #fff; text-shadow: 0 1px 8px rgb(0 0 0 / 0.35); }
+  .osd .corner { position: absolute; width: 26px; height: 26px; border-color: rgb(255 255 255 / 0.85); border-style: solid; }
+  .osd .c1 { top: 22px; left: 22px; border-width: 1.5px 0 0 1.5px; }
+  .osd .c2 { top: 22px; right: 22px; border-width: 1.5px 1.5px 0 0; }
+  .osd .c3 { bottom: 22px; left: 22px; border-width: 0 0 1.5px 1.5px; }
+  .osd .c4 { bottom: 22px; right: 22px; border-width: 0 1.5px 1.5px 0; }
+
+  .horizon { animation: horizon 7s ease-in-out infinite; transform-origin: center; }
+  @keyframes horizon {
+    0%, 100% { transform: rotate(-4deg) translateY(2px); }
+    50% { transform: rotate(5deg) translateY(-3px); }
+  }
+
+  .blink { animation: blink 1.2s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0.15; } }
+
+  .marquee { display: flex; width: max-content; animation: marquee 50s linear infinite; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
+  /* Scroll reveal — only hides when JS has run, so no-JS still shows content. */
+  .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity 1.1s var(--ease), transform 1.1s var(--ease); }
+  .js .reveal.in { opacity: 1; transform: none; }
+
+  /* Hero headline: each line rises out of a mask. Pure CSS so it never waits on hydration. */
+  .rise { display: block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+  .rise > span { display: block; animation: rise 1.3s var(--ease) both; }
+  @keyframes rise { from { transform: translateY(105%); } }
+
+  .fade-up { animation: fadeUp 1.2s var(--ease) both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } }
+
+  /* Word-by-word ink fill driven by scroll (see Statement.tsx). */
+  .ink-word { transition: color 0.35s linear; color: rgb(13 15 18 / 0.16); }
+  .ink-word.on { color: var(--ink); }
+
+  .tile video, .tile img { transition: transform 1.4s var(--ease), filter 0.8s var(--ease); }
+  .tile:hover video, .tile:hover img { transform: scale(1.04); }
+
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .horizon, .blink, .marquee, .rise > span, .fade-up { animation: none; }
+    .js .reveal { opacity: 1; transform: none; }
+  }
+
+  .field {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--rule-2);
+    padding: 16px 0 12px;
+    color: var(--ink);
+    font-size: 16px;
+    border-radius: 0;
+    transition: border-color 0.3s var(--ease);
+  }
+  .field:focus { outline: none; border-color: var(--ink); }
+  .field::placeholder { color: var(--ink-3); }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding-inline: 16px;
+    border-radius: 999px;
+    border: 1px solid var(--rule-2);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.3s var(--ease);
+  }
+  .chip:hover { border-color: var(--ink); color: var(--ink); }
+  input:checked + .chip { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  input:focus-visible + .chip { outline: 2px solid var(--ink); outline-offset: 2px; }
+}
