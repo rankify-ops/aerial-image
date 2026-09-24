@@ -6,24 +6,15 @@ import { Logo } from "./Logo";
 import { Arrow } from "./ui";
 
 /*
- * Floating glass pill. Sits clear of the page at the top, tightens once you
- * scroll, hides on scroll-down and returns on scroll-up so it never covers
- * the footage.
+ * Floating glass pill. Sits clear of the page at the top and tightens once
+ * you scroll. Always visible — no hide-on-scroll.
  */
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    let last = window.scrollY;
-    const on = () => {
-      const y = window.scrollY;
-      setScrolled(y > 24);
-      setHidden(y > 600 && y > last + 4);
-      if (y < last - 4) setHidden(false);
-      last = y;
-    };
+    const on = () => setScrolled(window.scrollY > 24);
     on();
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
@@ -38,9 +29,7 @@ export function Header() {
   }, [open]);
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-transform duration-500 ${hidden && !open ? "-translate-y-[120%]" : ""}`}
-    >
+    <header className="fixed inset-x-0 top-0 z-50">
       <div className={`wrap transition-[padding] duration-500 ${scrolled ? "pt-3" : "pt-5"}`}>
         <div
           className={`flex h-[62px] items-center justify-between gap-6 rounded-full pl-5 pr-2 transition-all duration-500 ${
