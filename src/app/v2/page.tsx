@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { Instrument_Serif } from "next/font/google";
 import { Hero2 } from "@/components/v2/Hero2";
-import { Clients } from "@/components/Clients";
-import { Statement } from "@/components/Statement";
-import { Reel } from "@/components/Reel";
-import { Work } from "@/components/Work";
-import { Services } from "@/components/Services";
-import { Credentials } from "@/components/Credentials";
-import { Contact } from "@/components/Contact";
+import { Trio } from "@/components/v2/Trio";
+import { FlightDeck } from "@/components/v2/FlightDeck";
+import { Deck } from "@/components/v2/Deck";
+import { Ledger } from "@/components/v2/Ledger";
+import { Board } from "@/components/v2/Board";
+import { ContactApp } from "@/components/v2/ContactApp";
 
 /*
- * Variation 2 — full-bleed footage hero with "neu glass" panels and a fine
- * serif. The shared sections below are re-skinned by the .v2 rules in
- * globals.css; / (variation 1) is untouched.
+ * Variation 2 — its own sections, built from the fintech-app reference Tom
+ * sent (juicelab.uiux): phone screens over a faded title, a hand-held phone
+ * turning to face you, a wallet card stack, a transactions list, tilted
+ * isometric UI, and the transfer screen as the form. / (variation 1) is
+ * untouched.
  */
 const serif = Instrument_Serif({
   subsets: ["latin"],
@@ -31,13 +32,12 @@ export default function V2() {
   return (
     <div className={`v2 ${serif.variable}`}>
       <Hero2 />
-      <Clients />
-      <Statement />
-      <Reel />
-      <Work />
-      <Services />
-      <Credentials />
-      <Contact />
+      <Trio />
+      <FlightDeck />
+      <Deck />
+      <Ledger />
+      <Board />
+      <ContactApp />
     </div>
   );
 }

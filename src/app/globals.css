@@ -345,3 +345,95 @@
 
   @media (prefers-reduced-motion: reduce) { .scroll-dot { animation: none; } }
 }
+
+/* ── Variation 2 components ─────────────────────────────────────────────── */
+@layer components {
+  /* CSS iPhone: 9:19.5 bezel with an inner pearl screen. */
+  .phone {
+    position: relative;
+    aspect-ratio: 9 / 19.5;
+    border-radius: 15% / 7%;
+    padding: 2.6%;
+    background: linear-gradient(145deg, #2b2d31, #0d0f12 40%, #1c1e22);
+    box-shadow:
+      inset 0 0 0 1.5px #3a3c41,
+      inset 0 0 0 3px #0d0f12,
+      0 2px 4px rgb(13 15 18 / 0.2),
+      0 50px 90px -30px rgb(13 15 18 / 0.55),
+      0 30px 40px -30px rgb(13 15 18 / 0.35);
+  }
+  .phone-screen {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 13% / 6.2%;
+    background:
+      radial-gradient(120% 60% at 20% 0%, #fff, transparent 60%),
+      radial-gradient(90% 70% at 100% 60%, #e1e4e8, transparent 70%),
+      #ecebe7;
+    color: var(--ink);
+  }
+
+  /* Pearl / iridescent service card with a pointer-tracked sheen. */
+  .deck-card {
+    background:
+      radial-gradient(140% 120% at 0% 0%, #ffffff 0%, transparent 55%),
+      conic-gradient(from 210deg at 70% 60%, #f3efe6, #e4e9ee, #efe6ee, #e8efe6, #f1ece2, #f3efe6),
+      #ecebe7;
+    border: 1px solid rgb(255 255 255 / 0.9);
+    box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgb(13 15 18 / 0.06), 0 30px 60px -28px rgb(13 15 18 / 0.45), 0 2px 6px rgb(13 15 18 / 0.08);
+    transition: transform 0.7s var(--ease), filter 0.7s var(--ease);
+  }
+  .deck-front {
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 30%;
+    --my: 20%;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 0.25s ease-out;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .deck-sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(40% 55% at var(--mx) var(--my), rgb(255 255 255 / 0.85), transparent 70%),
+      linear-gradient(115deg, transparent 30%, rgb(255 214 170 / 0.25) 45%, rgb(170 205 255 / 0.25) 55%, transparent 70%);
+    mix-blend-mode: soft-light;
+    pointer-events: none;
+  }
+
+  /* FlightDeck callouts: clip-path + transform reveal (no opacity on glass). */
+  .fd-call {
+    clip-path: inset(0 0 100% 0 round 24px);
+    transform: translateY(28px);
+    transition: clip-path 0.9s var(--ease), transform 0.9s var(--ease);
+  }
+  .fd-call[data-on="1"] { clip-path: inset(0 0 0 0 round 24px); transform: none; }
+  @media (max-width: 1023px) {
+    .fd-call[data-past="1"] { clip-path: inset(0 0 100% 0 round 24px); transform: translateY(-20px); }
+  }
+
+  /* Soft inset neumorphic input. */
+  .nfield {
+    display: block;
+    width: 100%;
+    border-radius: 16px;
+    padding: 15px 18px;
+    font-size: 16px;
+    color: var(--ink);
+    background: linear-gradient(180deg, #e9e8e4, #f4f3f0);
+    box-shadow: inset 0 2px 4px rgb(13 15 18 / 0.08), inset 0 -1px 0 #fff;
+    border: 0;
+    outline: none;
+    transition: box-shadow 0.3s var(--ease);
+  }
+  .nfield::placeholder { color: var(--ink-3); }
+  .nfield:focus { box-shadow: inset 0 2px 4px rgb(13 15 18 / 0.08), 0 0 0 2px var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fd-call { clip-path: none; transform: none; }
+  }
+}
