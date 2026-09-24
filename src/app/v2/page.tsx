@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Serif } from "next/font/google";
 import { Hero2 } from "@/components/v2/Hero2";
-import { Trio } from "@/components/v2/Trio";
+import { VideoWall } from "@/components/v2/VideoWall";
 import { FlightDeck } from "@/components/v2/FlightDeck";
 import { Deck } from "@/components/v2/Deck";
 import { Ledger } from "@/components/v2/Ledger";
@@ -10,7 +10,7 @@ import { ContactApp } from "@/components/v2/ContactApp";
 
 /*
  * Variation 2 — its own sections, built from the fintech-app reference Tom
- * sent (juicelab.uiux): phone screens over a faded title, a hand-held phone
+ * sent (juicelab.uiux): a tilted wall of footage, a hand-held phone
  * turning to face you, a wallet card stack, a transactions list, tilted
  * isometric UI, and the transfer screen as the form. / (variation 1) is
  * untouched.
@@ -32,7 +32,7 @@ export default function V2() {
   return (
     <div className={`v2 ${serif.variable}`}>
       <Hero2 />
-      <Trio />
+      <VideoWall />
       <FlightDeck />
       <Deck />
       <Ledger />
