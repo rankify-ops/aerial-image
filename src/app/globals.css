@@ -546,45 +546,70 @@
   }
 }
 
-/* ── Services pill switch ───────────────────────────────────────────────── */
+/* ── Services switch: full-width neumorphic (after Tom's ON/OFF reference) ── */
 @layer components {
-  .svc-switch {
+  .svc-neu {
+    --pad: 10px;
+    --h: 88px;
+    --ball: calc(var(--h) - var(--pad) * 2);
     position: relative;
-    flex-shrink: 0;
-    width: 96px;
-    height: 50px;
+    display: block;
+    width: 100%;
+    height: var(--h);
     border-radius: 999px;
-    background: linear-gradient(180deg, #e7e6e2, #f5f4f1);
-    box-shadow: inset 0 2px 6px rgb(13 15 18 / 0.13), inset 0 -1px 0 #fff, 0 0 0 1px rgb(13 15 18 / 0.07);
+    background: linear-gradient(145deg, #f8f7f4, #e8e7e2);
+    /* Raised: dark shadow bottom-right, white light top-left, crisp inner lip. */
+    box-shadow:
+      14px 14px 32px rgb(13 15 18 / 0.13),
+      -14px -14px 32px rgb(255 255 255 / 0.95),
+      inset 1px 1px 0 rgb(255 255 255 / 0.9),
+      inset -1px -1px 0 rgb(13 15 18 / 0.04);
     cursor: pointer;
     transition: box-shadow 0.4s var(--ease);
   }
-  .svc-switch:hover { box-shadow: inset 0 2px 6px rgb(13 15 18 / 0.13), inset 0 -1px 0 #fff, 0 0 0 1px rgb(13 15 18 / 0.18); }
-  .svc-switch:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-  /* The ball: glossy ink sphere with a live REC dot, springs across with a touch of overshoot. */
-  .svc-knob {
+  @media (min-width: 640px) { .svc-neu { --pad: 14px; --h: 132px; } }
+  .svc-neu:active {
+    box-shadow:
+      8px 8px 20px rgb(13 15 18 / 0.13),
+      -8px -8px 20px rgb(255 255 255 / 0.95),
+      inset 1px 1px 0 rgb(255 255 255 / 0.9);
+  }
+  .svc-neu:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+
+  /* The ball: a pearl sphere the same tone as the pill, lifted by light + shadow alone. */
+  .svc-ball {
     position: absolute;
-    top: 6px;
-    left: 6px;
-    width: 38px;
-    height: 38px;
+    top: var(--pad);
+    left: var(--pad);
+    width: var(--ball);
+    height: var(--ball);
+    border-radius: 999px;
+    background: radial-gradient(circle at 34% 30%, #ffffff 0%, #f6f5f2 45%, #e4e3de 100%);
+    box-shadow:
+      10px 12px 24px rgb(13 15 18 / 0.18),
+      4px 5px 8px rgb(13 15 18 / 0.08),
+      -8px -8px 18px rgb(255 255 255 / 1),
+      inset 1px 1px 1px rgb(255 255 255 / 1),
+      inset -3px -4px 8px rgb(13 15 18 / 0.05);
+    transition: left 0.7s cubic-bezier(0.62, -0.12, 0.22, 1.25), transform 0.3s var(--ease);
+  }
+  .svc-neu[data-on="1"] .svc-ball { left: calc(100% - var(--pad) - var(--ball)); }
+  .svc-neu:hover .svc-ball { transform: translateX(6px); }
+  .svc-neu[data-on="1"]:hover .svc-ball { transform: translateX(-6px); }
+
+  /* Name sits in the space the ball isn't in. */
+  .svc-label {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--ball) + var(--pad) * 2);
+    right: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 999px;
-    background: radial-gradient(circle at 34% 28%, #4a4f57, #16181c 58%, #0d0f12);
-    box-shadow: 0 6px 14px -4px rgb(13 15 18 / 0.55), 0 1px 2px rgb(13 15 18 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.2);
-    transition: transform 0.6s cubic-bezier(0.6, -0.15, 0.25, 1.4), width 0.22s var(--ease);
+    transition: left 0.7s cubic-bezier(0.62, -0.12, 0.22, 1.25), right 0.7s cubic-bezier(0.62, -0.12, 0.22, 1.25);
   }
-  .svc-switch[data-on="1"] .svc-knob { transform: translateX(46px); }
-  /* Anticipation: leans toward the other side on hover, squashes while pressed. */
-  .svc-switch:hover .svc-knob { transform: translateX(3px); }
-  .svc-switch[data-on="1"]:hover .svc-knob { transform: translateX(43px); }
-  .svc-switch:active .svc-knob { width: 46px; }
-  .svc-switch[data-on="1"]:active .svc-knob { transform: translateX(38px); }
-  .svc-knob .rec-dot { width: 6px; height: 6px; }
+  .svc-neu[data-on="1"] .svc-label { left: 0; right: calc(var(--ball) + var(--pad) * 2); }
 
-  @media (prefers-reduced-motion: reduce) {
-    .svc-knob { transition: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { .svc-ball, .svc-label { transition: none; } }
 }
