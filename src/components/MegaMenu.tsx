@@ -183,7 +183,7 @@ function Svc({ close }: { close: () => void }) {
             View service <Arrow />
           </button>
           <a href="#contact" onClick={close} className="btn btn-primary h-10 px-5">
-            Enquiries <Arrow />
+            Work with us <Arrow />
           </a>
         </div>
       </div>

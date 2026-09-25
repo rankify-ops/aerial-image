@@ -130,7 +130,7 @@ export function Hero2() {
             </p>
             <div className="fade-up mt-8 flex flex-col gap-2.5 sm:flex-row" style={{ animationDelay: "0.5s" }}>
               <a href="#contact" className="btn btn-primary w-full sm:w-auto">
-                Enquiries <Arrow />
+                Work with us <Arrow />
               </a>
               <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="nbtn w-full sm:w-auto">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-paper">
@@ -225,7 +225,7 @@ export function Hero2() {
             </svg>
           </a>
           <a href="#contact" className="nbtn h-11 px-4 text-[10.5px]">
-            Enquire <Arrow />
+            Work with us <Arrow />
           </a>
         </nav>
 

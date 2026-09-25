@@ -137,7 +137,7 @@ export function Header() {
               {site.email}
             </a>
             <a href="#contact" onClick={() => hide()} className="btn btn-primary hidden h-[46px] sm:inline-flex">
-              Enquiries <Arrow />
+              Work with us <Arrow />
             </a>
             <button
               type="button"
@@ -190,7 +190,7 @@ export function Header() {
           ))}
           <div className="mt-auto grid gap-3">
             <a href="#contact" onClick={() => setOpen(false)} className="btn btn-primary w-full">
-              Enquiries <Arrow />
+              Work with us <Arrow />
             </a>
             <a href={`mailto:${site.email}`} className="btn btn-ghost w-full">
               {site.email}

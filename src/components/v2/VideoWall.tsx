@@ -119,7 +119,7 @@ export function VideoWall() {
                 Watch Showreel
               </button>
               <a href="#contact" className="btn btn-primary w-full sm:w-auto">
-                Enquiries <Arrow />
+                Work with us <Arrow />
               </a>
             </div>
           </div>

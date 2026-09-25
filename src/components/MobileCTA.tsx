@@ -32,7 +32,7 @@ export function MobileCTA() {
           {site.email}
         </a>
         <a href="#contact" className="btn btn-primary h-11 px-5">
-          Enquiries <Arrow />
+          Work with us <Arrow />
         </a>
       </div>
     </div>

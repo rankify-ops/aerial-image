@@ -178,7 +178,7 @@ export function Deck() {
                 <Arrow className="rotate-180" />
               </button>
               <a href="#contact" className="btn btn-primary h-11 flex-1 px-4">
-                Enquiries <Arrow />
+                Work with us <Arrow />
               </a>
               <button type="button" onClick={() => go(1)} aria-label="Next service" className="norb flex h-11 w-11 shrink-0 items-center justify-center text-ink">
                 <Arrow />

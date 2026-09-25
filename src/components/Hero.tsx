@@ -109,7 +109,7 @@ export function Hero() {
           </p>
           <div className="fade-up flex flex-col gap-3 sm:flex-row lg:col-span-6 lg:justify-end" style={{ animationDelay: "0.62s" }}>
             <a href="#contact" className="btn btn-primary w-full sm:w-auto">
-              Enquiries <Arrow />
+              Work with us <Arrow />
             </a>
             <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-ghost w-full sm:w-auto">
               <Play size={11} /> Watch Showreel

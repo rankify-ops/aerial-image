@@ -113,7 +113,7 @@ export function ServiceTabs() {
                 </ul>
                 <div className="mt-auto pt-6">
                   <a href="#contact" className="mono flex items-center justify-between border-t border-rule pt-5 text-[10.5px] text-ink transition-colors hover:text-rec-ink">
-                    Enquiries <Arrow />
+                    Work with us <Arrow />
                   </a>
                 </div>
               </div>
