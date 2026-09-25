@@ -14,9 +14,9 @@ export default function Home() {
       <Hero />
       <Clients />
       <ServiceTabs />
+      <ReviewFeature />
       <Statement />
       <Reel />
-      <ReviewFeature />
       <Work />
       <ReviewCarousel />
       <Credentials />
