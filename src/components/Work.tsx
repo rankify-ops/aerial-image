@@ -12,7 +12,7 @@ export function Work() {
     <section id="work" className="wrap py-28 sm:py-36">
       <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <Kicker index="03">Recent Projects</Kicker>
+          <Kicker index="04">Recent Projects</Kicker>
           <h2 className="display mt-8">
             Recent <span className="dim">Projects</span>
           </h2>

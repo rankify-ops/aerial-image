@@ -60,7 +60,7 @@ export function Reel() {
       <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:overflow-hidden">
         <div className="wrap grid gap-8 pb-10 lg:grid-cols-12 lg:items-end lg:pb-12">
           <div className="lg:col-span-7">
-            <Kicker index="02">FPV Cinematic Media</Kicker>
+            <Kicker index="03">FPV Cinematic Media</Kicker>
             <h2 className="display mt-8">
               Immersive <span className="dim">and captivating.</span>
             </h2>

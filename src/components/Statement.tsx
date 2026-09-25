@@ -43,7 +43,7 @@ export function Statement() {
 
   return (
     <section id="fpv" className="wrap py-28 sm:py-40">
-      <Kicker index="01">FPV Video / Piloting</Kicker>
+      <Kicker index="02">FPV Video / Piloting</Kicker>
       <p ref={ref} className="mt-12 max-w-[1280px] text-[clamp(30px,4.6vw,72px)] leading-[1.02] tracking-[-0.04em]">
         {words.map((w, i) => (
           <span key={i} className="ink-word">

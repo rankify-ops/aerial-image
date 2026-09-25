@@ -174,3 +174,23 @@ export const stills = [
   "dji-0798",
   "8pix8141",
 ];
+
+/*
+ * CLIENT REVIEWS — PENDING.
+ * No public reviews exist for Aerial Image (searched Google/Facebook, none on
+ * their site), and we never invent them. Until this list has real entries the
+ * review sections render clearly-marked placeholder slots.
+ * Add each review VERBATIM from the client (Google / email / LinkedIn), e.g.
+ *   { quote: "…", name: "Jane Smith", role: "Leasing Director", company: "CBRE", rating: 5, source: "Google" },
+ * The first entry with `featured: true` (or the first entry) fills the pull-quote section.
+ */
+export type Review = {
+  quote: string;
+  name: string;
+  role?: string;
+  company?: string;
+  rating?: number;
+  source?: string;
+  featured?: boolean;
+};
+export const reviews: Review[] = [];

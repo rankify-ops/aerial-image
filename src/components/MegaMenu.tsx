@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { fpvStatement, licences, pillars, projects, services, site } from "@/content/site";
 import { asset } from "@/lib/basePath";
-import { openService } from "./Services";
+import { openService } from "./ServiceTabs";
 import { Arrow, Loop, Photo, Play } from "./ui";
 import { openVideo } from "./VideoModal";
 
@@ -54,7 +54,7 @@ function Fpv({ close }: { close: () => void }) {
   return (
     <>
       <div className="flex flex-col lg:col-span-5">
-        <Label i="01">FPV Video / Piloting</Label>
+        <Label i="02">FPV Video / Piloting</Label>
         <p className="mt-6 text-[30px] leading-[1.02] tracking-[-0.035em] text-ink">FPV Cinematic Media</p>
         <p className="mt-4 text-[14px] leading-relaxed text-ink-2">{fpvStatement}</p>
         <div className="mt-auto flex gap-2 pt-8">
@@ -90,7 +90,7 @@ function Work({ close }: { close: () => void }) {
   return (
     <>
       <div className="lg:col-span-6">
-        <Label i="03">Recent Projects</Label>
+        <Label i="04">Recent Projects</Label>
         <ul className="mt-4 divide-y divide-rule">
           {projects.map((q, i) => (
             <li key={q.id}>
@@ -146,7 +146,7 @@ function Svc({ close }: { close: () => void }) {
     <>
       {services.map((s, t) => (
         <div key={s.key} className="lg:col-span-3">
-          <Label i="04">{s.name}</Label>
+          <Label i="01">{s.name}</Label>
           <ul className="mt-4">
             {s.groups.map((grp, a) => {
               const on = sel[0] === t && sel[1] === a;
