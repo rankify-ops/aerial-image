@@ -545,3 +545,46 @@
     .preloader.is-reveal .pre-black { animation: none; opacity: 0; transition: opacity 0.6s; }
   }
 }
+
+/* ── Services pill switch ───────────────────────────────────────────────── */
+@layer components {
+  .svc-switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 96px;
+    height: 50px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #e7e6e2, #f5f4f1);
+    box-shadow: inset 0 2px 6px rgb(13 15 18 / 0.13), inset 0 -1px 0 #fff, 0 0 0 1px rgb(13 15 18 / 0.07);
+    cursor: pointer;
+    transition: box-shadow 0.4s var(--ease);
+  }
+  .svc-switch:hover { box-shadow: inset 0 2px 6px rgb(13 15 18 / 0.13), inset 0 -1px 0 #fff, 0 0 0 1px rgb(13 15 18 / 0.18); }
+  .svc-switch:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  /* The ball: glossy ink sphere with a live REC dot, springs across with a touch of overshoot. */
+  .svc-knob {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: radial-gradient(circle at 34% 28%, #4a4f57, #16181c 58%, #0d0f12);
+    box-shadow: 0 6px 14px -4px rgb(13 15 18 / 0.55), 0 1px 2px rgb(13 15 18 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.2);
+    transition: transform 0.6s cubic-bezier(0.6, -0.15, 0.25, 1.4), width 0.22s var(--ease);
+  }
+  .svc-switch[data-on="1"] .svc-knob { transform: translateX(46px); }
+  /* Anticipation: leans toward the other side on hover, squashes while pressed. */
+  .svc-switch:hover .svc-knob { transform: translateX(3px); }
+  .svc-switch[data-on="1"]:hover .svc-knob { transform: translateX(43px); }
+  .svc-switch:active .svc-knob { width: 46px; }
+  .svc-switch[data-on="1"]:active .svc-knob { transform: translateX(38px); }
+  .svc-knob .rec-dot { width: 6px; height: 6px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .svc-knob { transition: none; }
+  }
+}
