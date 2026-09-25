@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { VideoModal } from "@/components/VideoModal";
 import { MobileCTA } from "@/components/MobileCTA";
+import { Preloader } from "@/components/Preloader";
 import { site } from "@/content/site";
 import { asset } from "@/lib/basePath";
 import "./globals.css";
@@ -64,10 +65,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-AU" className={`${inter.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        <script dangerouslySetInnerHTML={{ __html: "var d=document.documentElement;d.classList.add('js','preloading');setTimeout(function(){d.classList.remove('preloading')},9000)" }} />
         <link rel="preload" as="image" href={asset("/video/hero-poster.jpg")} />
       </head>
       <body>
+        <Preloader />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <Header />
         <main>{children}</main>

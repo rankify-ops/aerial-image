@@ -483,3 +483,65 @@
     .mega-in { animation: none; }
   }
 }
+
+/* ── Pre-flight loader ─────────────────────────────────────────────────── */
+@property --iris {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@layer components {
+  .preloader {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    color: var(--ink);
+    background:
+      radial-gradient(900px 600px at 50% 45%, #fff, transparent 70%),
+      radial-gradient(1200px 800px at 90% 100%, #e3e5e8, transparent 70%),
+      #eeede9;
+    --iris: 0px;
+    -webkit-mask-image: radial-gradient(circle at 50% 45%, transparent var(--iris), #000 calc(var(--iris) + 1px));
+    mask-image: radial-gradient(circle at 50% 45%, transparent var(--iris), #000 calc(var(--iris) + 1px));
+  }
+  .js .preloader { display: block; }
+  html.preloading { overflow: hidden; }
+
+  /* Hold the hero's entrance until the loader lifts. */
+  html.preloading .rise > span,
+  html.preloading .fade-up { animation-play-state: paused; }
+
+  .pre-ticks { animation: preSpin 24s linear infinite; }
+  @keyframes preSpin { to { transform: rotate(360deg); } }
+
+  .pre-drone > svg { animation: preHover 3.2s ease-in-out infinite; }
+  @keyframes preHover {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-7px) rotate(2deg); }
+  }
+  .prop-cw { animation: propSpin 0.16s linear infinite; }
+  .prop-ccw { animation: propSpin 0.16s linear infinite reverse; }
+  @keyframes propSpin { to { transform: rotate(360deg); } }
+
+  /* Exit: the quad punches past the camera, then an iris opens onto the page. */
+  .preloader.is-exit { animation: irisOpen 1.25s cubic-bezier(0.7, 0, 0.2, 1) 0.15s forwards; }
+  @keyframes irisOpen { to { --iris: 150vmax; } }
+  .preloader.is-exit .pre-drone { animation: flyPast 0.9s cubic-bezier(0.6, 0, 0.9, 0.4) forwards; }
+  @keyframes flyPast {
+    to { transform: scale(7) translateY(-4%); filter: blur(10px); opacity: 0; }
+  }
+
+  /* Light OSD corner brackets for the loader frame. */
+  .osd-light i { position: absolute; width: 22px; height: 22px; border-color: rgb(13 15 18 / 0.35); border-style: solid; }
+  .osd-light .k1 { top: 14px; left: 14px; border-width: 1.2px 0 0 1.2px; }
+  .osd-light .k2 { top: 14px; right: 14px; border-width: 1.2px 1.2px 0 0; }
+  .osd-light .k3 { bottom: 14px; left: 14px; border-width: 0 0 1.2px 1.2px; }
+  .osd-light .k4 { bottom: 14px; right: 14px; border-width: 0 1.2px 1.2px 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pre-ticks, .pre-drone > svg, .prop-cw, .prop-ccw { animation: none; }
+    .preloader.is-exit { animation: none; opacity: 0; transition: opacity 0.4s; }
+    .preloader.is-exit .pre-drone { animation: none; }
+  }
+}
