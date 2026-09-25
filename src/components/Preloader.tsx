@@ -8,8 +8,9 @@ import { Mark } from "./v2/Phone";
  * Pre-flight arming screen, shown until the hero footage has buffered enough
  * to play. The gimbal ring and % are real: they track how many seconds of the
  * hero <video> are buffered (target ~3s, or readyState 4). The checklist and
- * telemetry are decorative. Exit: ARMED → the quad punches past the camera and
- * an iris opens from the centre onto the page.
+ * telemetry are decorative. Exit: ARMED → the quad launches up at the camera
+ * and keeps coming until its body fills the frame; the screen cuts to black
+ * as it flies through, holds a beat, then the black dissolves onto the page.
  *
  * Server-rendered visible (so there's no flash of the page first), hidden for
  * no-JS via the .js class, and never holds the page longer than MAX_MS.
@@ -27,7 +28,7 @@ const CHECKS = [
 
 export function Preloader() {
   const [p, setP] = useState(0);
-  const [phase, setPhase] = useState<"load" | "armed" | "exit" | "gone">("load");
+  const [phase, setPhase] = useState<"load" | "armed" | "exit" | "reveal" | "gone">("load");
   const shown = useRef(0);
 
   useEffect(() => {
@@ -63,11 +64,13 @@ export function Preloader() {
       if (!done && shown.current >= 1 && elapsed >= MIN_MS) {
         done = true;
         setPhase("armed");
+        // armed 520ms → fly-through 1150ms (black lands at ~0.95s) → reveal 900ms.
         setTimeout(() => setPhase("exit"), 520);
         setTimeout(() => {
-          setPhase("gone");
+          setPhase("reveal");
           document.documentElement.classList.remove("preloading");
-        }, 520 + 1300);
+        }, 520 + 1150);
+        setTimeout(() => setPhase("gone"), 520 + 1150 + 900);
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -85,7 +88,7 @@ export function Preloader() {
   const C = 2 * Math.PI * R;
 
   return (
-    <div className={`preloader ${phase === "exit" ? "is-exit" : ""}`} role="status" aria-live="polite" aria-label={`Loading ${pct}%`}>
+    <div className={`preloader ${phase === "exit" ? "is-exit" : ""} ${phase === "reveal" ? "is-reveal" : ""}`} role="status" aria-live="polite" aria-label={`Loading ${pct}%`}>
       {/* Frame corners + top telemetry */}
       <div className="osd-light" aria-hidden>
         <i className="k1" />
@@ -104,10 +107,10 @@ export function Preloader() {
       </div>
 
       {/* Stage */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="pre-stage relative h-[300px] w-[300px] sm:h-[340px] sm:w-[340px]">
+      <div className="pre-stage-wrap absolute inset-0 flex flex-col items-center justify-center">
+        <div className="pre-stage relative h-[300px] w-[300px] sm:h-[340px] sm:w-[340px]" style={{ perspective: "900px" }}>
           {/* Gimbal ring: ticks rotate slowly, arc = buffer progress */}
-          <svg viewBox="0 0 300 300" className="absolute inset-0 h-full w-full" aria-hidden>
+          <svg viewBox="0 0 300 300" className="pre-ring absolute inset-0 h-full w-full" aria-hidden>
             <g className="pre-ticks" style={{ transformOrigin: "150px 150px" }}>
               {Array.from({ length: 72 }, (_, i) => (
                 <line
@@ -184,7 +187,7 @@ export function Preloader() {
         </div>
 
         {/* Readout */}
-        <div className="mt-8 text-center">
+        <div className="pre-readout mt-8 text-center">
           <p className="text-[clamp(56px,8vw,96px)] leading-none tracking-[-0.06em] text-ink tabular-nums">
             {String(pct).padStart(3, "0")}
             <span className="text-ink/25">%</span>
@@ -214,6 +217,7 @@ export function Preloader() {
           );
         })}
       </ul>
+      <div className="pre-black" aria-hidden />
       <p className="mono absolute bottom-7 right-6 hidden text-[10px] text-ink-3 sm:bottom-10 sm:right-10 sm:block">{site.tagline.join(" • ")}</p>
     </div>
   );

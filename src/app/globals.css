@@ -485,11 +485,6 @@
 }
 
 /* ── Pre-flight loader ─────────────────────────────────────────────────── */
-@property --iris {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
 @layer components {
   .preloader {
     display: none;
@@ -501,9 +496,6 @@
       radial-gradient(900px 600px at 50% 45%, #fff, transparent 70%),
       radial-gradient(1200px 800px at 90% 100%, #e3e5e8, transparent 70%),
       #eeede9;
-    --iris: 0px;
-    -webkit-mask-image: radial-gradient(circle at 50% 45%, transparent var(--iris), #000 calc(var(--iris) + 1px));
-    mask-image: radial-gradient(circle at 50% 45%, transparent var(--iris), #000 calc(var(--iris) + 1px));
   }
   .js .preloader { display: block; }
   html.preloading { overflow: hidden; }
@@ -524,13 +516,31 @@
   .prop-ccw { animation: propSpin 0.16s linear infinite reverse; }
   @keyframes propSpin { to { transform: rotate(360deg); } }
 
-  /* Exit: the quad punches past the camera, then an iris opens onto the page. */
-  .preloader.is-exit { animation: irisOpen 1.25s cubic-bezier(0.7, 0, 0.2, 1) 0.15s forwards; }
-  @keyframes irisOpen { to { --iris: 150vmax; } }
-  .preloader.is-exit .pre-drone { animation: flyPast 0.9s cubic-bezier(0.6, 0, 0.9, 0.4) forwards; }
-  @keyframes flyPast {
-    to { transform: scale(7) translateY(-4%); filter: blur(10px); opacity: 0; }
+  /*
+   * Exit, part 1 — fly-through. Everything but the quad clears away, the quad
+   * launches at the camera (accelerating, slight nose-up pitch) until its body
+   * fills the frame, and a black layer lands as it passes through the lens.
+   */
+  .preloader > *:not(.pre-black):not(.pre-stage-wrap) { transition: opacity 0.35s var(--ease); }
+  .preloader.is-exit > *:not(.pre-black):not(.pre-stage-wrap) { opacity: 0; }
+  .preloader.is-exit .pre-ring,
+  .preloader.is-exit .pre-readout { opacity: 0; transition: opacity 0.3s var(--ease); }
+  .preloader.is-exit .pre-drone { animation: flyInto 1.15s cubic-bezier(0.55, 0, 0.85, 0.3) forwards; }
+  .preloader.is-exit .pre-drone > svg { animation: none; }
+  @keyframes flyInto {
+    0% { transform: translateY(0) scale(1) rotateX(0deg); }
+    18% { transform: translateY(14px) scale(0.94) rotateX(8deg); }  /* squat before the punch */
+    100% { transform: translateY(-6%) scale(22) rotateX(-10deg); filter: blur(3px); }
   }
+  .pre-black { position: absolute; inset: 0; background: #07080a; opacity: 0; pointer-events: none; }
+  .preloader.is-exit .pre-black { animation: blackIn 0.32s ease-in 0.72s forwards; }
+  @keyframes blackIn { to { opacity: 1; } }
+
+  /* Exit, part 2 — reveal: the pearl ground is gone, the black dissolves onto the page. */
+  .preloader.is-reveal { background: transparent; pointer-events: none; }
+  .preloader.is-reveal > *:not(.pre-black) { visibility: hidden; }
+  .preloader.is-reveal .pre-black { opacity: 1; animation: blackOut 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.12s forwards; }
+  @keyframes blackOut { to { opacity: 0; } }
 
   /* Light OSD corner brackets for the loader frame. */
   .osd-light i { position: absolute; width: 22px; height: 22px; border-color: rgb(13 15 18 / 0.35); border-style: solid; }
@@ -541,7 +551,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .pre-ticks, .pre-drone > svg, .prop-cw, .prop-ccw { animation: none; }
-    .preloader.is-exit { animation: none; opacity: 0; transition: opacity 0.4s; }
-    .preloader.is-exit .pre-drone { animation: none; }
+    .preloader.is-exit .pre-drone { animation: none; opacity: 0; transition: opacity 0.4s; }
+    .preloader.is-exit .pre-black { animation: none; opacity: 1; transition: opacity 0.4s; }
+    .preloader.is-reveal .pre-black { animation: none; opacity: 0; transition: opacity 0.6s; }
   }
 }
