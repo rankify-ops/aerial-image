@@ -513,8 +513,8 @@
    * stays put at full throttle and racks out of focus (blur + a touch of
    * shrink) while the screen dips to black. No fly-at-camera — Tom cut that.
    */
-  .preloader > *:not(.pre-black):not(.pre-stage-wrap) { transition: opacity 0.35s var(--ease); }
-  .preloader.is-exit > *:not(.pre-black):not(.pre-stage-wrap) { opacity: 0; }
+  .preloader > *:not(.pre-black):not(.pre-stage-wrap):not(.pre-photo):not(.pre-vignette) { transition: opacity 0.35s var(--ease); }
+  .preloader.is-exit > *:not(.pre-black):not(.pre-stage-wrap):not(.pre-photo):not(.pre-vignette) { opacity: 0; }
   .preloader.is-exit .pre-ring,
   .preloader.is-exit .pre-readout { opacity: 0; transition: opacity 0.3s var(--ease); }
   .preloader.is-exit .pre-drone { animation: propDefocus 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
@@ -546,70 +546,23 @@
   }
 }
 
-/* ── Services switch: full-width neumorphic (after Tom's ON/OFF reference) ── */
+/* Focus-pull loader layers. */
 @layer components {
-  .svc-neu {
-    --pad: 10px;
-    --h: 88px;
-    --ball: calc(var(--h) - var(--pad) * 2);
-    position: relative;
-    display: block;
-    width: 100%;
-    height: var(--h);
-    border-radius: 999px;
-    background: linear-gradient(145deg, #f8f7f4, #e8e7e2);
-    /* Raised: dark shadow bottom-right, white light top-left, crisp inner lip. */
-    box-shadow:
-      14px 14px 32px rgb(13 15 18 / 0.13),
-      -14px -14px 32px rgb(255 255 255 / 0.95),
-      inset 1px 1px 0 rgb(255 255 255 / 0.9),
-      inset -1px -1px 0 rgb(13 15 18 / 0.04);
-    cursor: pointer;
-    transition: box-shadow 0.4s var(--ease);
-  }
-  @media (min-width: 640px) { .svc-neu { --pad: 14px; --h: 132px; } }
-  .svc-neu:active {
-    box-shadow:
-      8px 8px 20px rgb(13 15 18 / 0.13),
-      -8px -8px 20px rgb(255 255 255 / 0.95),
-      inset 1px 1px 0 rgb(255 255 255 / 0.9);
-  }
-  .svc-neu:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
-
-  /* The ball: a pearl sphere the same tone as the pill, lifted by light + shadow alone. */
-  .svc-ball {
+  .pre-photo {
     position: absolute;
-    top: var(--pad);
-    left: var(--pad);
-    width: var(--ball);
-    height: var(--ball);
-    border-radius: 999px;
-    background: radial-gradient(circle at 34% 30%, #ffffff 0%, #f6f5f2 45%, #e4e3de 100%);
-    box-shadow:
-      10px 12px 24px rgb(13 15 18 / 0.18),
-      4px 5px 8px rgb(13 15 18 / 0.08),
-      -8px -8px 18px rgb(255 255 255 / 1),
-      inset 1px 1px 1px rgb(255 255 255 / 1),
-      inset -3px -4px 8px rgb(13 15 18 / 0.05);
-    transition: left 0.7s cubic-bezier(0.62, -0.12, 0.22, 1.25), transform 0.3s var(--ease);
+    inset: -40px;
+    background-size: cover;
+    background-position: center;
+    transition: filter 0.2s linear, transform 0.4s var(--ease);
+    will-change: filter, transform;
   }
-  .svc-neu[data-on="1"] .svc-ball { left: calc(100% - var(--pad) - var(--ball)); }
-  .svc-neu:hover .svc-ball { transform: translateX(6px); }
-  .svc-neu[data-on="1"]:hover .svc-ball { transform: translateX(-6px); }
-
-  /* Name sits in the space the ball isn't in. */
-  .svc-label {
+  .pre-vignette {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: calc(var(--ball) + var(--pad) * 2);
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: left 0.7s cubic-bezier(0.62, -0.12, 0.22, 1.25), right 0.7s cubic-bezier(0.62, -0.12, 0.22, 1.25);
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 48%, rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.32) 100%),
+      linear-gradient(180deg, rgb(0 0 0 / 0.22), transparent 22%, transparent 78%, rgb(0 0 0 / 0.28));
   }
-  .svc-neu[data-on="1"] .svc-label { left: 0; right: calc(var(--ball) + var(--pad) * 2); }
-
-  @media (prefers-reduced-motion: reduce) { .svc-ball, .svc-label { transition: none; } }
+  .osd-light.is-white i { border-color: rgb(255 255 255 / 0.7); }
+  .preloader .pre-readout, .preloader .pre-ui { text-shadow: 0 1px 12px rgb(0 0 0 / 0.35); }
 }

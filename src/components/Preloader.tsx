@@ -1,80 +1,52 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { licences, site } from "@/content/site";
+import { site } from "@/content/site";
+import { asset } from "@/lib/basePath";
 import { Mark } from "./v2/Phone";
 
 /*
- * Pre-flight spin-up, shown until the hero footage has buffered enough to
- * play. A single FPV tri-blade prop is the throttle gauge: its speed, the
- * gimbal ring and the % all track how many seconds of the hero <video> are
- * buffered (target ~3s, or readyState 4). At speed the blades smear into a
- * motion-blur disc (ghost blades + disc fade in as RPM climbs, which also
- * hides wagon-wheel aliasing). RPM and the checklist are decorative.
- * Exit: full throttle → the prop racks out of focus in place, dip to black, the
- * black dissolves onto the page.
+ * Focus-pull loader, shown until the hero footage has buffered enough to play.
+ * Their hero still fills the frame, starting heavily defocused; a thin-line
+ * lens aperture in the centre opens stop by stop (f/22 → f/1.4) as the hero
+ * <video> buffers (target ~3s, or readyState 4), and the image racks into
+ * focus with it. ISO / shutter readouts are decorative.
+ * Exit: wide open → the blades clear, dip to black, black dissolves onto the page.
+ * (Earlier versions were a quad, then a single prop — Tom asked for "not a drone".)
  *
- * Server-rendered visible (so there's no flash of the page first), hidden for
- * no-JS via the .js class, and never holds the page longer than MAX_MS.
+ * Server-rendered visible (no flash of the page first), hidden for no-JS via
+ * the .js class, never holds the page longer than MAX_MS.
  */
 const MIN_MS = 1600;
 const MAX_MS = 7000;
 const TARGET_S = 3;
+const STOPS = [22, 16, 11, 8, 5.6, 4, 2.8, 2, 1.4];
+const BLADES = 6;
 
-const CHECKS = [
-  { at: 0.12, label: "Video link", value: "5.8 GHz · CH 01" },
-  { at: 0.35, label: "Satellites", value: "Locked" },
-  { at: 0.58, label: "CASA", value: licences.join(" · ") },
-  { at: 0.8, label: "Motors", value: "Armed" },
-];
+/** Aperture geometry: rim minus a hexagon opening, plus each blade edge extended across the rim. */
+function aperture(open: number, spin: number) {
+  const R = 100;
+  const r = 10 + open * 100; // opening radius; >= R means fully clear
+  const pts = Array.from({ length: BLADES }, (_, i) => {
+    const a = ((i * 360) / BLADES + spin) * (Math.PI / 180);
+    return [100 + r * Math.cos(a), 100 + r * Math.sin(a)];
+  });
+  const hex = pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(2)} ${y.toFixed(2)}`).join(" ") + " Z";
+  const rim = "M200 100 A100 100 0 1 0 0 100 A100 100 0 1 0 200 100 Z";
+  const lines = pts.map(([x1, y1], i) => {
+    const [x2, y2] = pts[(i + 1) % BLADES];
+    const len = Math.hypot(x2 - x1, y2 - y1) || 1;
+    const ux = (x2 - x1) / len;
+    const uy = (y2 - y1) / len;
+    return `M${(x1 - ux * 2 * R).toFixed(2)} ${(y1 - uy * 2 * R).toFixed(2)} L${(x1 + ux * 0.2 * R).toFixed(2)} ${(y1 + uy * 0.2 * R).toFixed(2)}`;
+  });
+  return { fill: `${rim} ${hex}`, lines, clear: r >= R };
+}
 
 export function Preloader() {
   const [p, setP] = useState(0);
   const [phase, setPhase] = useState<"load" | "armed" | "exit" | "reveal" | "gone">("load");
   const shown = useRef(0);
-  const phaseRef = useRef(phase);
-  const blades = useRef<SVGGElement>(null);
-  const ghosts = useRef<SVGGElement>(null);
-  const disc = useRef<SVGCircleElement>(null);
-  const rpm = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    phaseRef.current = phase;
-  }, [phase]);
-
-  // Prop spin loop — runs until unmount, speed follows the displayed progress.
-  useEffect(() => {
-    let raf = 0;
-    let last = performance.now();
-    let angle = 0;
-    let omega = 0.5; // rev/s, eased toward target
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const loop = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-      const target = phaseRef.current === "load" ? 0.6 + 22 * Math.pow(shown.current, 1.7) : 32;
-      omega += (target - omega) * Math.min(1, dt * 3);
-      angle = (angle + omega * 360 * dt) % 360;
-      const sf = Math.min(1, Math.max(0, (omega - 3) / 16)); // 0 = crisp blades, 1 = full blur
-      if (blades.current) {
-        blades.current.setAttribute("transform", `rotate(${reduce ? 0 : angle} 100 100)`);
-        blades.current.style.opacity = String(1 - 0.6 * sf);
-      }
-      if (ghosts.current) {
-        const kids = ghosts.current.children;
-        for (let i = 0; i < kids.length; i++) {
-          const g = kids[i] as SVGGElement;
-          g.setAttribute("transform", `rotate(${angle - (i + 1) * (6 + 16 * sf)} 100 100)`);
-          g.style.opacity = String((0.34 - i * 0.07) * sf);
-        }
-      }
-      if (disc.current) disc.current.style.opacity = String(0.15 + 0.85 * sf);
-      if (rpm.current) rpm.current.textContent = Math.round(1200 + omega * 60 * 16).toLocaleString("en-AU");
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, []);
 
   useEffect(() => {
     const t0 = performance.now();
@@ -97,25 +69,23 @@ export function Preloader() {
 
     const tick = (now: number) => {
       const elapsed = now - t0;
-      // Real buffer progress, but never ahead of a minimum pace, and forced home at MAX_MS.
       const real = target();
       const floor = Math.min(0.9, elapsed / MAX_MS);
       const goal = elapsed >= MAX_MS ? 1 : Math.max(real, floor);
-      // Ease the displayed value toward the goal; cap speed so it reads as a sweep.
-      shown.current += Math.min(0.035, (goal - shown.current) * 0.12);
+      shown.current += Math.min(0.03, (goal - shown.current) * 0.1);
       if (goal >= 1 && shown.current > 0.985) shown.current = 1;
       setP(shown.current);
 
       if (!done && shown.current >= 1 && elapsed >= MIN_MS) {
         done = true;
+        // wide open 600ms → blades clear + dip to black 1000ms → reveal 900ms.
         setPhase("armed");
-        // armed 520ms → fly-through 1150ms (black lands at ~0.95s) → reveal 900ms.
-        setTimeout(() => setPhase("exit"), 520);
+        setTimeout(() => setPhase("exit"), 600);
         setTimeout(() => {
           setPhase("reveal");
           document.documentElement.classList.remove("preloading");
-        }, 520 + 1150);
-        setTimeout(() => setPhase("gone"), 520 + 1150 + 900);
+        }, 600 + 1000);
+        setTimeout(() => setPhase("gone"), 600 + 1000 + 900);
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -129,149 +99,100 @@ export function Preloader() {
 
   if (phase === "gone") return null;
   const pct = Math.round(p * 100);
-  const R = 118;
-  const C = 2 * Math.PI * R;
+  const stop = STOPS[Math.min(STOPS.length - 1, Math.floor(p * STOPS.length))];
+  // Blades open with a slight twist, like a real iris; fully clear once exiting.
+  const ap = aperture(phase === "load" || phase === "armed" ? 0.08 + p * 0.62 : 1.2, (1 - p) * 40);
+  const blur = Math.max(0, (1 - p) * 26);
 
   return (
     <div className={`preloader ${phase === "exit" ? "is-exit" : ""} ${phase === "reveal" ? "is-reveal" : ""}`} role="status" aria-live="polite" aria-label={`Loading ${pct}%`}>
-      {/* Frame corners + top telemetry */}
-      <div className="osd-light" aria-hidden>
+      {/* Their hero still, racking into focus */}
+      <div
+        className="pre-photo"
+        aria-hidden
+        style={{
+          backgroundImage: `url(${asset("/video/hero-poster.jpg")})`,
+          filter: `blur(${blur.toFixed(1)}px) saturate(${(0.6 + p * 0.4).toFixed(2)})`,
+          transform: `scale(${(1.12 - p * 0.08).toFixed(3)})`,
+        }}
+      />
+      <div className="pre-vignette" aria-hidden />
+
+      {/* Viewfinder frame */}
+      <div className="osd-light is-white" aria-hidden>
         <i className="k1" />
         <i className="k2" />
         <i className="k3" />
         <i className="k4" />
       </div>
-      <div className="mono absolute inset-x-6 top-6 flex items-center justify-between text-[10px] text-ink-3 sm:inset-x-10 sm:top-9">
-        <span className="flex items-center gap-3 text-ink">
-          <Mark className="h-4 w-5 bg-ink" />
-          Aerial Image <span className="text-ink-3">— Spin-up</span>
+      <div className="pre-ui mono absolute inset-x-6 top-6 flex items-center justify-between text-[10px] text-white/75 sm:inset-x-10 sm:top-9">
+        <span className="flex items-center gap-3 text-white">
+          <Mark className="h-4 w-5 bg-white" />
+          Aerial Image <span className="text-white/60">— Focus</span>
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 text-white">
           <span className="rec-dot blink" /> {phase === "load" ? "Standby" : "Rec"}
         </span>
       </div>
 
-      {/* Stage */}
+      {/* Aperture */}
       <div className="pre-stage-wrap absolute inset-0 flex flex-col items-center justify-center">
-        <div className="pre-stage relative h-[300px] w-[300px] sm:h-[340px] sm:w-[340px]" style={{ perspective: "900px" }}>
-          {/* Gimbal ring: ticks rotate slowly, arc = buffer progress */}
-          <svg viewBox="0 0 300 300" className="pre-ring absolute inset-0 h-full w-full" aria-hidden>
-            <g className="pre-ticks" style={{ transformOrigin: "150px 150px" }}>
-              {Array.from({ length: 72 }, (_, i) => (
+        <div className="pre-drone relative h-[240px] w-[240px] sm:h-[300px] sm:w-[300px]">
+          <svg viewBox="-20 -20 240 240" className="h-full w-full overflow-visible" aria-hidden>
+            <defs>
+              <clipPath id="apRim">
+                <circle cx="100" cy="100" r="100" />
+              </clipPath>
+            </defs>
+            {!ap.clear && (
+              <g clipPath="url(#apRim)">
+                <path d={ap.fill} fillRule="evenodd" fill="rgb(255 255 255 / 0.16)" />
+                {ap.lines.map((d, i) => (
+                  <path key={i} d={d} stroke="rgb(255 255 255 / 0.85)" strokeWidth="0.9" fill="none" />
+                ))}
+              </g>
+            )}
+            <circle cx="100" cy="100" r="100" fill="none" stroke="rgb(255 255 255 / 0.9)" strokeWidth="1.1" />
+            {/* Focus scale, turning as focus pulls */}
+            <g transform={`rotate(${(p * 120).toFixed(2)} 100 100)`}>
+              {Array.from({ length: 48 }, (_, i) => (
                 <line
                   key={i}
-                  x1="150"
-                  y1={i % 6 === 0 ? 8 : 12}
-                  x2="150"
-                  y2="18"
-                  stroke="currentColor"
-                  strokeWidth={i % 6 === 0 ? 1.4 : 0.8}
-                  className="text-ink/25"
-                  transform={`rotate(${i * 5} 150 150)`}
+                  x1="100"
+                  y1={i % 4 === 0 ? -14 : -10}
+                  x2="100"
+                  y2="-6"
+                  stroke="rgb(255 255 255 / 0.6)"
+                  strokeWidth={i % 4 === 0 ? 1.1 : 0.6}
+                  transform={`rotate(${i * 7.5} 100 100)`}
                 />
               ))}
             </g>
-            <circle cx="150" cy="150" r={R} fill="none" stroke="rgb(13 15 18 / 0.08)" strokeWidth="1.5" />
-            <circle
-              cx="150"
-              cy="150"
-              r={R}
-              fill="none"
-              stroke={phase === "load" ? "var(--ink)" : "var(--rec)"}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeDasharray={C}
-              strokeDashoffset={C * (1 - p)}
-              transform="rotate(-90 150 150)"
-              style={{ transition: "stroke .3s" }}
-            />
-            {/* Leading marker on the arc */}
-            <g transform={`rotate(${p * 360 - 90} 150 150)`}>
-              <circle cx={150 + R} cy="150" r="4" fill="var(--rec)" />
-            </g>
+            <path d="M92 100h16M100 92v16" stroke="#fff" strokeWidth="1" />
           </svg>
-
-          {/* FPV tri-blade prop, top-down */}
-          <div className="pre-drone absolute inset-0 flex items-center justify-center">
-            <svg viewBox="0 0 200 200" className="h-[74%] w-[74%] overflow-visible" aria-hidden>
-              <defs>
-                <radialGradient id="propDisc" cx="50%" cy="50%" r="50%">
-                  <stop offset="0.12" stopColor="rgb(13 15 18)" stopOpacity="0.06" />
-                  <stop offset="0.8" stopColor="rgb(13 15 18)" stopOpacity="0.16" />
-                  <stop offset="0.96" stopColor="rgb(13 15 18)" stopOpacity="0.28" />
-                  <stop offset="1" stopColor="rgb(13 15 18)" stopOpacity="0" />
-                </radialGradient>
-                <linearGradient id="propBlade" x1="0" y1="1" x2="0" y2="0">
-                  <stop offset="0" stopColor="#0d0f12" />
-                  <stop offset="1" stopColor="#3a3f47" />
-                </linearGradient>
-              </defs>
-              {/* Motion-blur disc + tip ring */}
-              <circle ref={disc} cx="100" cy="100" r="95" fill="url(#propDisc)" style={{ opacity: 0.15 }} />
-              <circle cx="100" cy="100" r="95" fill="none" stroke="rgb(13 15 18 / 0.1)" strokeDasharray="2 5" />
-              {/* Ghost blades (trail) */}
-              <g ref={ghosts}>
-                {[0, 1, 2].map((k) => (
-                  <g key={k} style={{ opacity: 0 }}>
-                    {[0, 120, 240].map((r) => (
-                      <path key={r} d="M100 100 C 111 82, 119 46, 108 12 C 105 4, 97 4, 95 11 C 91 38, 92 76, 100 100 Z" fill="#0d0f12" transform={`rotate(${r} 100 100)`} />
-                    ))}
-                  </g>
-                ))}
-              </g>
-              {/* Blades */}
-              <g ref={blades}>
-                {[0, 120, 240].map((r) => (
-                  <g key={r} transform={`rotate(${r} 100 100)`}>
-                    <path d="M100 100 C 111 82, 119 46, 108 12 C 105 4, 97 4, 95 11 C 91 38, 92 76, 100 100 Z" fill="url(#propBlade)" />
-                    <path d="M100 96 C 104 74, 106 44, 103 18" stroke="rgb(255 255 255 / 0.18)" strokeWidth="1.2" fill="none" />
-                  </g>
-                ))}
-              </g>
-              {/* Hub, bell and prop nut */}
-              <circle cx="100" cy="100" r="17" fill="#0d0f12" />
-              <circle cx="100" cy="100" r="12" fill="#2a2e35" />
-              <polygon points="100,91.5 107.4,95.8 107.4,104.2 100,108.5 92.6,104.2 92.6,95.8" fill="#50555d" />
-              <circle cx="100" cy="100" r="3" fill="var(--rec)" />
-            </svg>
-          </div>
         </div>
 
         {/* Readout */}
-        <div className="pre-readout mt-8 text-center">
-          <p className="text-[clamp(56px,8vw,96px)] leading-none tracking-[-0.06em] text-ink tabular-nums">
-            {String(pct).padStart(3, "0")}
-            <span className="text-ink/25">%</span>
+        <div className="pre-readout mt-10 text-center text-white">
+          <p className="text-[clamp(56px,8vw,104px)] leading-none tracking-[-0.05em] tabular-nums">
+            <span className="text-white/45">f/</span>
+            {stop}
           </p>
-          <p className="mono mt-3 text-[11px] text-ink-3 tabular-nums">
-            RPM <span ref={rpm} className="text-ink">1,200</span>
-            <span className="mx-2 text-ink/20">·</span>
-            <span className={phase === "load" ? "" : "text-rec-ink"}>{phase === "load" ? "Spooling up" : "Full throttle"}</span>
+          <p className="mono mt-4 flex items-center justify-center gap-3 text-[10.5px] text-white/75 tabular-nums">
+            <span>
+              Focus <span className="text-white">{String(pct).padStart(3, "0")}%</span>
+            </span>
+            <span className="text-white/30">·</span>
+            <span>ISO 100</span>
+            <span className="text-white/30">·</span>
+            <span>1/1000</span>
           </p>
         </div>
       </div>
 
-      {/* Checklist */}
-      <ul className="mono absolute bottom-7 left-6 grid gap-1.5 text-[10px] sm:bottom-10 sm:left-10">
-        {CHECKS.map((c) => {
-          const ok = p >= c.at;
-          return (
-            <li key={c.label} className={`flex items-center gap-3 transition-colors duration-300 ${ok ? "text-ink" : "text-ink/30"}`}>
-              <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${ok ? "border-ink bg-ink text-paper" : "border-ink/25"}`}>
-                {ok && (
-                  <svg width="7" height="6" viewBox="0 0 7 6" aria-hidden>
-                    <path d="M1 3l1.8 1.8L6 1" stroke="currentColor" strokeWidth="1.2" fill="none" />
-                  </svg>
-                )}
-              </span>
-              <span className="w-[92px] whitespace-nowrap">{c.label}</span>
-              <span className="hidden text-ink-3 sm:inline">{ok ? c.value : "—"}</span>
-            </li>
-          );
-        })}
-      </ul>
+      <p className="mono absolute bottom-7 left-6 text-[10px] text-white/75 sm:bottom-10 sm:left-10">{phase === "load" ? "Pulling focus" : "Wide open"}</p>
+      <p className="mono absolute bottom-7 right-6 hidden text-[10px] text-white/75 sm:bottom-10 sm:right-10 sm:block">{site.tagline.join(" • ")}</p>
       <div className="pre-black" aria-hidden />
-      <p className="mono absolute bottom-7 right-6 hidden text-[10px] text-ink-3 sm:bottom-10 sm:right-10 sm:block">{site.tagline.join(" • ")}</p>
     </div>
   );
 }

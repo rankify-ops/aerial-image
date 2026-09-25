@@ -82,7 +82,7 @@ export function Header() {
       )}
 
       <div
-        className={`mx-auto w-full max-w-[3840px] px-4 transition-[padding] duration-500 sm:px-7 lg:px-11 ${scrolled ? "pt-3" : "pt-5"}`}
+        className={`wrap transition-[padding] duration-500 ${scrolled ? "pt-3" : "pt-5"}`}
         onMouseEnter={() => menu && clearTimeout(timer.current)}
         onMouseLeave={() => mega && menu && hide(180)}
       >
