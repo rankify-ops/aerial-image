@@ -11,7 +11,7 @@ import { Mark } from "./v2/Phone";
  * buffered (target ~3s, or readyState 4). At speed the blades smear into a
  * motion-blur disc (ghost blades + disc fade in as RPM climbs, which also
  * hides wagon-wheel aliasing). RPM and the checklist are decorative.
- * Exit: full throttle → the spinning disc rushes the lens, cut to black, the
+ * Exit: full throttle → the prop racks out of focus in place, dip to black, the
  * black dissolves onto the page.
  *
  * Server-rendered visible (so there's no flash of the page first), hidden for

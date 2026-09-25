@@ -509,19 +509,17 @@
 
 
   /*
-   * Exit, part 1 — fly-through. Everything but the quad clears away, the quad
-   * launches at the camera (accelerating, slight nose-up pitch) until its body
-   * fills the frame, and a black layer lands as it passes through the lens.
+   * Exit, part 1 — dip to black. Everything but the prop clears away; the prop
+   * stays put at full throttle and racks out of focus (blur + a touch of
+   * shrink) while the screen dips to black. No fly-at-camera — Tom cut that.
    */
   .preloader > *:not(.pre-black):not(.pre-stage-wrap) { transition: opacity 0.35s var(--ease); }
   .preloader.is-exit > *:not(.pre-black):not(.pre-stage-wrap) { opacity: 0; }
   .preloader.is-exit .pre-ring,
   .preloader.is-exit .pre-readout { opacity: 0; transition: opacity 0.3s var(--ease); }
-  .preloader.is-exit .pre-drone { animation: flyInto 1.15s cubic-bezier(0.55, 0, 0.85, 0.3) forwards; }
-  @keyframes flyInto {
-    0% { transform: translateY(0) scale(1) rotateX(0deg); }
-    18% { transform: translateY(14px) scale(0.94) rotateX(8deg); }  /* squat before the punch */
-    100% { transform: translateY(-6%) scale(22) rotateX(-10deg); filter: blur(3px); }
+  .preloader.is-exit .pre-drone { animation: propDefocus 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+  @keyframes propDefocus {
+    to { transform: scale(0.94); filter: blur(12px); opacity: 0; }
   }
   .pre-black { position: absolute; inset: 0; background: #07080a; opacity: 0; pointer-events: none; }
   .preloader.is-exit .pre-black { animation: blackIn 0.32s ease-in 0.72s forwards; }
