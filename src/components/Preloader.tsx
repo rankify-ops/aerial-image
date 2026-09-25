@@ -5,12 +5,14 @@ import { licences, site } from "@/content/site";
 import { Mark } from "./v2/Phone";
 
 /*
- * Pre-flight arming screen, shown until the hero footage has buffered enough
- * to play. The gimbal ring and % are real: they track how many seconds of the
- * hero <video> are buffered (target ~3s, or readyState 4). The checklist and
- * telemetry are decorative. Exit: ARMED → the quad launches up at the camera
- * and keeps coming until its body fills the frame; the screen cuts to black
- * as it flies through, holds a beat, then the black dissolves onto the page.
+ * Pre-flight spin-up, shown until the hero footage has buffered enough to
+ * play. A single FPV tri-blade prop is the throttle gauge: its speed, the
+ * gimbal ring and the % all track how many seconds of the hero <video> are
+ * buffered (target ~3s, or readyState 4). At speed the blades smear into a
+ * motion-blur disc (ghost blades + disc fade in as RPM climbs, which also
+ * hides wagon-wheel aliasing). RPM and the checklist are decorative.
+ * Exit: full throttle → the spinning disc rushes the lens, cut to black, the
+ * black dissolves onto the page.
  *
  * Server-rendered visible (so there's no flash of the page first), hidden for
  * no-JS via the .js class, and never holds the page longer than MAX_MS.
@@ -23,13 +25,56 @@ const CHECKS = [
   { at: 0.12, label: "Video link", value: "5.8 GHz · CH 01" },
   { at: 0.35, label: "Satellites", value: "Locked" },
   { at: 0.58, label: "CASA", value: licences.join(" · ") },
-  { at: 0.8, label: "Props", value: "Spun up" },
+  { at: 0.8, label: "Motors", value: "Armed" },
 ];
 
 export function Preloader() {
   const [p, setP] = useState(0);
   const [phase, setPhase] = useState<"load" | "armed" | "exit" | "reveal" | "gone">("load");
   const shown = useRef(0);
+  const phaseRef = useRef(phase);
+  const blades = useRef<SVGGElement>(null);
+  const ghosts = useRef<SVGGElement>(null);
+  const disc = useRef<SVGCircleElement>(null);
+  const rpm = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
+
+  // Prop spin loop — runs until unmount, speed follows the displayed progress.
+  useEffect(() => {
+    let raf = 0;
+    let last = performance.now();
+    let angle = 0;
+    let omega = 0.5; // rev/s, eased toward target
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const loop = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const target = phaseRef.current === "load" ? 0.6 + 22 * Math.pow(shown.current, 1.7) : 32;
+      omega += (target - omega) * Math.min(1, dt * 3);
+      angle = (angle + omega * 360 * dt) % 360;
+      const sf = Math.min(1, Math.max(0, (omega - 3) / 16)); // 0 = crisp blades, 1 = full blur
+      if (blades.current) {
+        blades.current.setAttribute("transform", `rotate(${reduce ? 0 : angle} 100 100)`);
+        blades.current.style.opacity = String(1 - 0.6 * sf);
+      }
+      if (ghosts.current) {
+        const kids = ghosts.current.children;
+        for (let i = 0; i < kids.length; i++) {
+          const g = kids[i] as SVGGElement;
+          g.setAttribute("transform", `rotate(${angle - (i + 1) * (6 + 16 * sf)} 100 100)`);
+          g.style.opacity = String((0.34 - i * 0.07) * sf);
+        }
+      }
+      if (disc.current) disc.current.style.opacity = String(0.15 + 0.85 * sf);
+      if (rpm.current) rpm.current.textContent = Math.round(1200 + omega * 60 * 16).toLocaleString("en-AU");
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     const t0 = performance.now();
@@ -99,7 +144,7 @@ export function Preloader() {
       <div className="mono absolute inset-x-6 top-6 flex items-center justify-between text-[10px] text-ink-3 sm:inset-x-10 sm:top-9">
         <span className="flex items-center gap-3 text-ink">
           <Mark className="h-4 w-5 bg-ink" />
-          Aerial Image <span className="text-ink-3">— Pre-flight</span>
+          Aerial Image <span className="text-ink-3">— Spin-up</span>
         </span>
         <span className="flex items-center gap-2">
           <span className="rec-dot blink" /> {phase === "load" ? "Standby" : "Rec"}
@@ -146,42 +191,48 @@ export function Preloader() {
             </g>
           </svg>
 
-          {/* Quad, top-down */}
+          {/* FPV tri-blade prop, top-down */}
           <div className="pre-drone absolute inset-0 flex items-center justify-center">
-            <svg viewBox="0 0 200 200" className="h-[62%] w-[62%] overflow-visible" aria-hidden>
-              {/* arms */}
-              <g stroke="var(--ink)" strokeWidth="7" strokeLinecap="round">
-                <line x1="100" y1="100" x2="42" y2="42" />
-                <line x1="100" y1="100" x2="158" y2="42" />
-                <line x1="100" y1="100" x2="42" y2="158" />
-                <line x1="100" y1="100" x2="158" y2="158" />
-              </g>
-              {/* props (blurred discs + spinning blades) */}
-              {[
-                [42, 42, 1],
-                [158, 42, -1],
-                [42, 158, -1],
-                [158, 158, 1],
-              ].map(([x, y, dir], i) => (
-                <g key={i}>
-                  <circle cx={x} cy={y} r="30" fill="rgb(13 15 18 / 0.05)" stroke="rgb(13 15 18 / 0.12)" strokeWidth="1" />
-                  <g className={dir > 0 ? "prop-cw" : "prop-ccw"} style={{ transformOrigin: `${x}px ${y}px` }}>
-                    <ellipse cx={x} cy={y} rx="28" ry="3.2" fill="rgb(13 15 18 / 0.55)" />
-                    <ellipse cx={x} cy={y} rx="3.2" ry="28" fill="rgb(13 15 18 / 0.18)" />
+            <svg viewBox="0 0 200 200" className="h-[74%] w-[74%] overflow-visible" aria-hidden>
+              <defs>
+                <radialGradient id="propDisc" cx="50%" cy="50%" r="50%">
+                  <stop offset="0.12" stopColor="rgb(13 15 18)" stopOpacity="0.06" />
+                  <stop offset="0.8" stopColor="rgb(13 15 18)" stopOpacity="0.16" />
+                  <stop offset="0.96" stopColor="rgb(13 15 18)" stopOpacity="0.28" />
+                  <stop offset="1" stopColor="rgb(13 15 18)" stopOpacity="0" />
+                </radialGradient>
+                <linearGradient id="propBlade" x1="0" y1="1" x2="0" y2="0">
+                  <stop offset="0" stopColor="#0d0f12" />
+                  <stop offset="1" stopColor="#3a3f47" />
+                </linearGradient>
+              </defs>
+              {/* Motion-blur disc + tip ring */}
+              <circle ref={disc} cx="100" cy="100" r="95" fill="url(#propDisc)" style={{ opacity: 0.15 }} />
+              <circle cx="100" cy="100" r="95" fill="none" stroke="rgb(13 15 18 / 0.1)" strokeDasharray="2 5" />
+              {/* Ghost blades (trail) */}
+              <g ref={ghosts}>
+                {[0, 1, 2].map((k) => (
+                  <g key={k} style={{ opacity: 0 }}>
+                    {[0, 120, 240].map((r) => (
+                      <path key={r} d="M100 100 C 111 82, 119 46, 108 12 C 105 4, 97 4, 95 11 C 91 38, 92 76, 100 100 Z" fill="#0d0f12" transform={`rotate(${r} 100 100)`} />
+                    ))}
                   </g>
-                  <circle cx={x} cy={y} r="7" fill="var(--ink)" />
-                  <circle cx={x} cy={y} r="2.4" fill="var(--paper)" />
-                </g>
-              ))}
-              {/* body + stack */}
-              <rect x="80" y="70" width="40" height="60" rx="12" fill="var(--ink)" />
-              <rect x="88" y="84" width="24" height="30" rx="5" fill="#2a2e35" />
-              {/* camera pod + REC */}
-              <rect x="90" y="58" width="20" height="16" rx="5" fill="var(--ink)" />
-              <circle cx="100" cy="64" r="4" fill="#2a2e35" stroke="#50555d" strokeWidth="1" />
-              <circle cx="112" cy="122" r="2.6" fill="var(--rec)" className="blink" />
-              {/* antennas */}
-              <path d="M92 130 l-6 12 M108 130 l6 12" stroke="var(--ink)" strokeWidth="2" strokeLinecap="round" />
+                ))}
+              </g>
+              {/* Blades */}
+              <g ref={blades}>
+                {[0, 120, 240].map((r) => (
+                  <g key={r} transform={`rotate(${r} 100 100)`}>
+                    <path d="M100 100 C 111 82, 119 46, 108 12 C 105 4, 97 4, 95 11 C 91 38, 92 76, 100 100 Z" fill="url(#propBlade)" />
+                    <path d="M100 96 C 104 74, 106 44, 103 18" stroke="rgb(255 255 255 / 0.18)" strokeWidth="1.2" fill="none" />
+                  </g>
+                ))}
+              </g>
+              {/* Hub, bell and prop nut */}
+              <circle cx="100" cy="100" r="17" fill="#0d0f12" />
+              <circle cx="100" cy="100" r="12" fill="#2a2e35" />
+              <polygon points="100,91.5 107.4,95.8 107.4,104.2 100,108.5 92.6,104.2 92.6,95.8" fill="#50555d" />
+              <circle cx="100" cy="100" r="3" fill="var(--rec)" />
             </svg>
           </div>
         </div>
@@ -192,8 +243,10 @@ export function Preloader() {
             {String(pct).padStart(3, "0")}
             <span className="text-ink/25">%</span>
           </p>
-          <p className={`mono mt-3 text-[11px] ${phase === "load" ? "text-ink-3" : "text-rec-ink"}`}>
-            {phase === "load" ? "Buffering footage" : "Armed — take off"}
+          <p className="mono mt-3 text-[11px] text-ink-3 tabular-nums">
+            RPM <span ref={rpm} className="text-ink">1,200</span>
+            <span className="mx-2 text-ink/20">·</span>
+            <span className={phase === "load" ? "" : "text-rec-ink"}>{phase === "load" ? "Spooling up" : "Full throttle"}</span>
           </p>
         </div>
       </div>

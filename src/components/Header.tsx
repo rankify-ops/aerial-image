@@ -67,7 +67,8 @@ export function Header() {
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  const solid = scrolled || open || overVideo || !!menu;
+  // Always glass — Tom wants the pill visible from the very top, not only once scrolled.
+  const solid = true;
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
