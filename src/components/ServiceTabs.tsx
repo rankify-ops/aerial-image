@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { services } from "@/content/site";
 import { Arrow, Kicker, Loop, Photo } from "./ui";
+import { LiquidInk } from "./LiquidInk";
 
 /** Deep-link from the mega menu: open a given tab + highlight a card, then scroll here. */
 export const SERVICE_EVT = "ai:service";
@@ -49,11 +50,11 @@ export function ServiceTabs() {
 
         {/*
           Tabs: one bar split by a slanted seam so the two halves interlock.
-          A skewed ink panel sits under the active half and sweeps across the
-          diagonal when the other half is hovered (desktop) or tapped.
+          Liquid ink (LiquidInk.tsx) sits under the active half and pours across
+          to the other side when it's hovered (desktop) or tapped.
         */}
         <div role="tablist" aria-label="Service type" data-on={tab} className="svc-twist mt-14">
-          <span className="svc-twist-ink" aria-hidden />
+          <LiquidInk on={tab} />
           <span className="svc-twist-seam" aria-hidden />
           {services.map((s, i) => {
             const on = tab === i;

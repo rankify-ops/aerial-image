@@ -656,20 +656,6 @@
   }
   @media (min-width: 640px) { .svc-twist { min-height: 140px; } }
 
-  /* Ink panel: a parallelogram wider than half, parked under the active side. */
-  .svc-twist-ink {
-    position: absolute;
-    top: -2px;
-    bottom: -2px;
-    left: -12%;
-    width: 64%;
-    z-index: -1;
-    background: var(--ink);
-    transform: skewX(var(--skew));
-    transition: left 0.75s cubic-bezier(0.7, 0, 0.2, 1);
-  }
-  .svc-twist[data-on="1"] .svc-twist-ink { left: 48%; }
-
   /* Faint slanted seam through the middle — the interlock line. */
   .svc-twist-seam {
     position: absolute;
@@ -701,7 +687,6 @@
   .svc-twist-count { color: var(--ink-3); transition: color 0.45s var(--ease) 0.12s; }
   .svc-twist-tab.is-on .svc-twist-count { color: rgb(243 243 239 / 0.7); }
 
-  @media (prefers-reduced-motion: reduce) { .svc-twist-ink { transition: none; } }
 }
 
 /* ALT hero: free text over footage. */
