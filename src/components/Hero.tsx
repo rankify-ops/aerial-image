@@ -92,33 +92,36 @@ export function Hero() {
           </p>
         </div>
 
-        <h1 className="mt-8 text-[clamp(48px,7.2vw,124px)] leading-[0.88] tracking-[-0.055em] sm:mt-10">
-          <span className="rise">
-            <span style={{ animationDelay: "0.15s" }}>
-              <span className="dim">A whole</span> new
-            </span>
-          </span>
-          <span className="rise">
-            <span style={{ animationDelay: "0.28s" }}>perspective.</span>
-          </span>
-        </h1>
-
-        <div className="mt-8 grid gap-8 pb-12 sm:mt-10 lg:grid-cols-12 lg:items-end lg:pb-10">
-          <p className="fade-up max-w-[520px] text-[17px] leading-relaxed text-ink-2 lg:col-span-6" style={{ animationDelay: "0.5s" }}>
-            Aerial Image specialise in <span className="text-ink">FPV (First-Person-View) cinematic capture and piloting services.</span>{" "}
-            Every project is carefully planned and captured to ensure the final deliverables are captivating and on point.
-          </p>
-          <div className="fade-up flex flex-col gap-3 sm:flex-row lg:col-span-6 lg:justify-end" style={{ animationDelay: "0.62s" }}>
-            <a href="#contact" className="btn btn-primary w-full sm:w-auto">
-              Work with us <Arrow />
-            </a>
-            <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-ghost w-full sm:w-auto">
-              <Play size={11} /> Watch Showreel
-            </button>
+        {/* Left: headline, intro, CTAs. Right (desktop): services. */}
+        <div className="grid gap-12 pb-12 lg:grid-cols-12 lg:items-center lg:gap-10 lg:pb-16">
+          <div className="lg:col-span-7">
+            <h1 className="mt-8 text-[clamp(48px,6.2vw,112px)] leading-[0.88] tracking-[-0.055em] sm:mt-10">
+              <span className="rise">
+                <span style={{ animationDelay: "0.15s" }}>
+                  <span className="dim">A whole</span> new
+                </span>
+              </span>
+              <span className="rise">
+                <span style={{ animationDelay: "0.28s" }}>perspective.</span>
+              </span>
+            </h1>
+            <p className="fade-up mt-8 max-w-[520px] text-[17px] leading-relaxed text-ink-2 sm:mt-10" style={{ animationDelay: "0.5s" }}>
+              Aerial Image specialise in <span className="text-ink">FPV (First-Person-View) cinematic capture and piloting services.</span>{" "}
+              Every project is carefully planned and captured to ensure the final deliverables are captivating and on point.
+            </p>
+            <div className="fade-up mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "0.62s" }}>
+              <a href="#contact" className="btn btn-primary w-full sm:w-auto">
+                Work with us <Arrow />
+              </a>
+              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-ghost w-full sm:w-auto">
+                <Play size={11} /> Watch Showreel
+              </button>
+            </div>
+          </div>
+          <div className="hidden lg:col-span-5 lg:block">
+            <HeroServices />
           </div>
         </div>
-
-        <HeroServices />
       </div>
 
       {/* Scroll stage: 190vh tall, frame sticks and opens to full-bleed. */}

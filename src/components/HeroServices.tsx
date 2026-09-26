@@ -5,8 +5,8 @@ import { openService } from "./ServiceTabs";
 import { Arrow } from "./ui";
 
 /*
- * Hero services grid (desktop only): all seven service groups as small tiles
- * with a line icon, plus a "Work with us" tile — 4 × 2. A tile opens that
+ * Hero services (desktop only, right of the headline): all seven service
+ * groups as compact tiles with a line icon, plus a "Work with us" tile — 2 × 4. A tile opens that
  * service in the Services section below and scrolls there.
  */
 
@@ -74,21 +74,21 @@ export function HeroServices() {
   };
 
   return (
-    <nav aria-label="Services" className="fade-up hidden grid-cols-4 gap-3 pb-14 lg:grid" style={{ animationDelay: "0.72s" }}>
+    <nav aria-label="Services" className="fade-up grid grid-cols-2 gap-2.5" style={{ animationDelay: "0.72s" }}>
       {tiles.map((x, i) => (
         <button
           key={x.title}
           type="button"
           onClick={() => go(x.t, x.a)}
-          className="group flex items-center gap-4 rounded-[18px] border border-rule bg-white/70 p-4 text-left transition-[border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ink hover:bg-white"
+          className="group flex min-h-[76px] items-center gap-3 rounded-[16px] border border-rule bg-white/70 p-3 text-left transition-[border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ink hover:bg-white"
         >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-rule bg-paper text-ink transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-rule bg-paper text-ink transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               {ICONS[x.title]}
             </svg>
           </span>
           <span className="min-w-0">
-            <span className="block text-[15px] leading-snug tracking-[-0.015em] text-ink">{x.title}</span>
+            <span className="block text-[14px] leading-snug tracking-[-0.015em] text-ink">{x.title}</span>
             <span className="mono mt-1 block text-[9.5px] text-ink-3">
               {String(i + 1).padStart(2, "0")} · {x.cat}
             </span>
@@ -97,13 +97,13 @@ export function HeroServices() {
       ))}
       <a
         href="#contact"
-        className="group flex items-center justify-between gap-4 rounded-[18px] border border-ink bg-ink p-4 pl-5 text-paper transition-transform duration-300 hover:-translate-y-0.5"
+        className="group flex min-h-[76px] items-center justify-between gap-3 rounded-[16px] border border-ink bg-ink p-3 pl-4 text-paper transition-transform duration-300 hover:-translate-y-0.5"
       >
         <span>
           <span className="block text-[15px] tracking-[-0.015em]">Work with us</span>
           <span className="mono mt-1 block text-[9.5px] text-paper/60">{services.reduce((n, s) => n + s.groups.length, 0)} services</span>
         </span>
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-paper text-ink">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-paper text-ink">
           <Arrow />
         </span>
       </a>
