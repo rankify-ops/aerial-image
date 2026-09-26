@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { services } from "@/content/site";
 import { Arrow, Kicker, Loop, Photo } from "./ui";
-// Pour v2 (droplets). To revert to v1 (tag services-liquid-v1): import { LiquidInk } from "./LiquidInk" and render <LiquidInk on={tab} />.
-import { LiquidDrops } from "./LiquidDrops";
+// Pour v1 (Tom's pick). The droplet version is LiquidDrops.tsx — swap the import + tag to try it again.
+import { LiquidInk } from "./LiquidInk";
 
 /** Deep-link from the mega menu: open a given tab + highlight a card, then scroll here. */
 export const SERVICE_EVT = "ai:service";
@@ -55,7 +55,7 @@ export function ServiceTabs() {
           to the other side when it's hovered (desktop) or tapped.
         */}
         <div role="tablist" aria-label="Service type" data-on={tab} className="svc-twist mt-14">
-          <LiquidDrops on={tab} />
+          <LiquidInk on={tab} />
           {services.map((s, i) => {
             const on = tab === i;
             return (
