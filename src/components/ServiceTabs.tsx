@@ -55,7 +55,6 @@ export function ServiceTabs() {
         */}
         <div role="tablist" aria-label="Service type" data-on={tab} className="svc-twist mt-14">
           <LiquidInk on={tab} />
-          <span className="svc-twist-seam" aria-hidden />
           {services.map((s, i) => {
             const on = tab === i;
             return (

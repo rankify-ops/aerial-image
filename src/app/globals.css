@@ -656,18 +656,6 @@
   }
   @media (min-width: 640px) { .svc-twist { min-height: 140px; } }
 
-  /* Faint slanted seam through the middle — the interlock line. */
-  .svc-twist-seam {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 1px;
-    background: var(--rule-2);
-    transform: skewX(var(--skew));
-    z-index: -2;
-  }
-
   .svc-twist-tab {
     display: flex;
     align-items: flex-end;
