@@ -183,14 +183,15 @@ export function HeroAlt() {
             <h1 className="mt-5 text-[clamp(52px,7.4vw,128px)] leading-[0.86] tracking-[-0.055em] text-white sm:mt-7">
               <span className="rise">
                 <span style={{ animationDelay: "0.1s" }}>
-                  A whole new
+                  {/* Solid grey — the old white/55 look without the footage showing through. */}
+                  <span style={{ color: "#c3c7cd" }}>A whole</span> new
                 </span>
               </span>
               <span className="rise">
                 <span style={{ animationDelay: "0.22s" }}>perspective.</span>
               </span>
             </h1>
-            <p className="fade-up mt-6 max-w-[500px] text-[16px] leading-relaxed text-white sm:text-[17px]" style={{ animationDelay: "0.4s" }}>
+            <p className="fade-up mt-6 max-w-[500px] text-[16px] leading-relaxed sm:text-[17px]" style={{ animationDelay: "0.4s", color: "#dfe2e6" }}>
               Aerial Image specialise in <span className="text-white">FPV (First-Person-View) cinematic capture and piloting services.</span>
             </p>
           </div>
