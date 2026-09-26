@@ -176,7 +176,7 @@ export const stills = [
 ];
 
 /*
- * CLIENT REVIEWS — PENDING.
+ * CLIENT REVIEWS — currently SAMPLES for the presentation (see below).
  * No public reviews exist for Aerial Image (searched Google/Facebook, none on
  * their site), and we never invent them. Until this list has real entries the
  * review sections render clearly-marked placeholder slots.
@@ -192,5 +192,57 @@ export type Review = {
   rating?: number;
   source?: string;
   featured?: boolean;
+  /** Presentation placeholder — renders a "Sample" tag. Remove every sample before launch. */
+  sample?: boolean;
 };
-export const reviews: Review[] = [];
+/*
+ * SAMPLE REVIEWS FOR THE PRESENTATION ONLY (Tom asked for mocks, 2026-09-26).
+ * Invented — attributed to roles/industries, never real people or brands, and
+ * each renders a visible "Sample" tag. Replace with Drew's real reviews
+ * (verbatim) and delete these before the site goes live.
+ */
+export const reviews: Review[] = [
+  {
+    quote: "The FPV footage completely changed how we presented the building. One continuous flight from the street, through the lobby and up to the floor we were leasing — enquiries picked up the week it went live.",
+    name: "Leasing Director",
+    company: "Commercial Real Estate",
+    rating: 5,
+    featured: true,
+    sample: true,
+  },
+  {
+    quote: "Planned properly, flown safely and delivered on time. Communication was clear from the first call to the final edit.",
+    name: "Marketing Manager",
+    company: "Hospitality Group",
+    rating: 5,
+    sample: true,
+  },
+  {
+    quote: "Quality over quantity is exactly right. We got a handful of shots that did more for our campaign than hours of generic stock.",
+    name: "Brand Lead",
+    company: "Creative Agency",
+    rating: 5,
+    sample: true,
+  },
+  {
+    quote: "The inspection data was clean and easy to share with our engineers — we could review the asset without sending anyone up.",
+    name: "Operations Manager",
+    company: "Infrastructure & Utilities",
+    rating: 5,
+    sample: true,
+  },
+  {
+    quote: "Fully licensed, insured and switched on about compliance, which made sign-off on our site straightforward.",
+    name: "Project Manager",
+    company: "Construction",
+    rating: 5,
+    sample: true,
+  },
+  {
+    quote: "The school tour video let families walk the grounds before they ever visited. Parents still mention it at open days.",
+    name: "Business Manager",
+    company: "Education",
+    rating: 5,
+    sample: true,
+  },
+];

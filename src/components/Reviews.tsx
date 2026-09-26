@@ -52,7 +52,10 @@ function Person({ r, dark = false }: { r?: Review; dark?: boolean }) {
         {r ? (
           <>
             <span className="block truncate text-[15px] tracking-tight text-ink">{r.name}</span>
-            <span className="mono block truncate text-[9.5px] text-ink-3">{[r.role, r.company].filter(Boolean).join(" · ")}</span>
+            <span className="mono flex items-center gap-2 truncate text-[9.5px] text-ink-3">
+              {[r.role, r.company].filter(Boolean).join(" · ")}
+              {r.sample && <span className="rounded-full border border-dashed border-rec/50 px-1.5 py-px text-[8px] text-rec-ink">Sample</span>}
+            </span>
           </>
         ) : (
           <>
