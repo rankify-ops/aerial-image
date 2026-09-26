@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer";
 import { VideoModal } from "@/components/VideoModal";
 import { MobileCTA } from "@/components/MobileCTA";
 import { Preloader } from "@/components/Preloader";
+import { Cursor } from "@/components/Cursor";
 import { site } from "@/content/site";
 import { asset } from "@/lib/basePath";
 import "./globals.css";
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <VideoModal />
         <MobileCTA />
+        <Cursor />
       </body>
     </html>
   );

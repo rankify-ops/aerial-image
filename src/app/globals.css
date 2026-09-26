@@ -574,3 +574,132 @@
   }
   @media (prefers-reduced-motion: reduce) { .sq-a, .sq-b { animation: none; } .sq-b { transform: rotate(45deg); } }
 }
+
+/* ── Custom cursor (desktop, fine pointer) ─────────────────────────────── */
+@layer components {
+  html.has-cursor,
+  html.has-cursor * { cursor: none !important; }
+  html.has-cursor input,
+  html.has-cursor textarea,
+  html.has-cursor select { cursor: text !important; }
+
+  .cursor { position: fixed; inset: 0; z-index: 300; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: difference; }
+  .cursor[data-mode="play"] { mix-blend-mode: normal; }
+  .cursor[data-hidden="1"] { opacity: 0; }
+  html:not(.has-cursor) .cursor { display: none; }
+
+  .cur-ring-pos, .cur-dot-pos { position: fixed; top: 0; left: 0; will-change: transform; }
+
+  .cur-dot {
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 999px;
+    background: #fff;
+    transition: transform 0.3s var(--ease), opacity 0.2s;
+  }
+  .cur-ring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    margin: -19px 0 0 -19px;
+    border-radius: 999px;
+    border: 1.5px solid #fff;
+    transition:
+      width 0.45s var(--ease), height 0.45s var(--ease), margin 0.45s var(--ease),
+      background-color 0.35s var(--ease), border-color 0.35s var(--ease), border-radius 0.35s var(--ease),
+      transform 0.25s var(--ease);
+  }
+  .cur-label {
+    font-family: var(--font-mono-face), ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.25s var(--ease), transform 0.35s var(--ease);
+  }
+
+  /* Link: a disc that inverts what's under it. */
+  .cursor[data-mode="link"] .cur-ring { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: #fff; }
+  .cursor[data-mode="link"] .cur-dot { opacity: 0; }
+
+  /* Play: solid ink bubble with a label (no blend so the label stays legible). */
+  .cursor[data-mode="play"] .cur-ring { width: 84px; height: 84px; margin: -42px 0 0 -42px; background: var(--ink); border-color: var(--ink); }
+  .cursor[data-mode="play"] .cur-label { opacity: 1; transform: none; }
+  .cursor[data-mode="play"] .cur-dot { opacity: 0; }
+
+  /* Text: a slim caret bar. */
+  .cursor[data-mode="text"] .cur-ring { width: 3px; height: 28px; margin: -14px 0 0 -1.5px; border-radius: 2px; background: #fff; }
+  .cursor[data-mode="text"] .cur-dot { opacity: 0; }
+
+  /* Press. */
+  .cursor[data-down="1"] .cur-ring { transform: scale(0.82); }
+}
+
+/* ── Services tabs: interlocking slanted bar ────────────────────────────── */
+@layer components {
+  .svc-twist {
+    --skew: -18deg;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 96px;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    isolation: isolate;
+  }
+  @media (min-width: 640px) { .svc-twist { min-height: 140px; } }
+
+  /* Ink panel: a parallelogram wider than half, parked under the active side. */
+  .svc-twist-ink {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    left: -12%;
+    width: 64%;
+    z-index: -1;
+    background: var(--ink);
+    transform: skewX(var(--skew));
+    transition: left 0.75s cubic-bezier(0.7, 0, 0.2, 1);
+  }
+  .svc-twist[data-on="1"] .svc-twist-ink { left: 48%; }
+
+  /* Faint slanted seam through the middle — the interlock line. */
+  .svc-twist-seam {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: var(--rule-2);
+    transform: skewX(var(--skew));
+    z-index: -2;
+  }
+
+  .svc-twist-tab {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px;
+    text-align: left;
+    color: rgb(13 15 18 / 0.35);
+    transition: color 0.45s var(--ease) 0.12s;
+  }
+  @media (min-width: 640px) { .svc-twist-tab { padding: 28px 32px; } }
+  /* Keep the right tab's text clear of the slanted edge. */
+  .svc-twist-tab.is-right { padding-left: 56px; }
+  .svc-twist-tab:not(.is-right) { padding-right: 56px; }
+  .svc-twist-tab:hover { color: rgb(13 15 18 / 0.6); }
+  .svc-twist-tab.is-on { color: var(--paper); }
+  .svc-twist-count { color: var(--ink-3); transition: color 0.45s var(--ease) 0.12s; }
+  .svc-twist-tab.is-on .svc-twist-count { color: rgb(243 243 239 / 0.7); }
+
+  @media (prefers-reduced-motion: reduce) { .svc-twist-ink { transition: none; } }
+}

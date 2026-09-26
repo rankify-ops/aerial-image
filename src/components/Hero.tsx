@@ -109,7 +109,8 @@ export function Hero() {
               Aerial Image specialise in <span className="text-ink">FPV (First-Person-View) cinematic capture and piloting services.</span>{" "}
               Every project is carefully planned and captured to ensure the final deliverables are captivating and on point.
             </p>
-            <div className="fade-up mt-8 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "0.62s" }}>
+            {/* Phones/tablets only — on desktop the service tiles carry "Work with us" and the video below has "Play with sound". */}
+            <div className="fade-up mt-8 flex flex-col gap-3 sm:flex-row lg:hidden" style={{ animationDelay: "0.62s" }}>
               <a href="#contact" className="btn btn-primary w-full sm:w-auto">
                 Work with us <Arrow />
               </a>
