@@ -583,7 +583,7 @@
   html.has-cursor textarea,
   html.has-cursor select { cursor: text !important; }
 
-  .cursor { position: fixed; inset: 0; z-index: 300; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: difference; }
+  .cursor { position: fixed; top: 0; left: 0; width: 0; height: 0; z-index: 300; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: difference; }
   .cursor[data-mode="play"] { mix-blend-mode: normal; }
   .cursor[data-hidden="1"] { opacity: 0; }
   html:not(.has-cursor) .cursor { display: none; }
