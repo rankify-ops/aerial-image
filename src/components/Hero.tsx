@@ -5,6 +5,7 @@ import { site, licences } from "@/content/site";
 import { asset } from "@/lib/basePath";
 import { Arrow, Play } from "./ui";
 import { openVideo } from "./VideoModal";
+import { HeroServices } from "./HeroServices";
 
 /*
  * Headline, then the showreel in an inset frame. As the frame reaches the top
@@ -91,7 +92,7 @@ export function Hero() {
           </p>
         </div>
 
-        <h1 className="mega mt-10 sm:mt-14">
+        <h1 className="mt-8 text-[clamp(48px,7.2vw,124px)] leading-[0.88] tracking-[-0.055em] sm:mt-10">
           <span className="rise">
             <span style={{ animationDelay: "0.15s" }}>
               <span className="dim">A whole</span> new
@@ -102,7 +103,7 @@ export function Hero() {
           </span>
         </h1>
 
-        <div className="mt-10 grid gap-8 pb-12 sm:mt-14 lg:grid-cols-12 lg:items-end">
+        <div className="mt-8 grid gap-8 pb-12 sm:mt-10 lg:grid-cols-12 lg:items-end lg:pb-10">
           <p className="fade-up max-w-[520px] text-[17px] leading-relaxed text-ink-2 lg:col-span-6" style={{ animationDelay: "0.5s" }}>
             Aerial Image specialise in <span className="text-ink">FPV (First-Person-View) cinematic capture and piloting services.</span>{" "}
             Every project is carefully planned and captured to ensure the final deliverables are captivating and on point.
@@ -116,6 +117,8 @@ export function Hero() {
             </button>
           </div>
         </div>
+
+        <HeroServices />
       </div>
 
       {/* Scroll stage: 190vh tall, frame sticks and opens to full-bleed. */}
