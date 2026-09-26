@@ -546,3 +546,31 @@
   }
 }
 
+
+/* Loader: two squares turning against each other in 90° ticks (a 90° turn of a square is seamless). */
+@layer components {
+  .sq { position: absolute; display: block; }
+  .sq-a {
+    inset: 0;
+    border: 1.5px solid var(--ink);
+    animation: sqA 2.4s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+  }
+  .sq-b {
+    inset: 30%;
+    background: var(--rec);
+    animation: sqB 2.4s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+  }
+  @keyframes sqA {
+    0% { transform: rotate(0deg); }
+    30%, 50% { transform: rotate(90deg); }
+    80%, 100% { transform: rotate(180deg); }
+  }
+  @keyframes sqB {
+    0%, 20% { transform: rotate(45deg) scale(1); }
+    45% { transform: rotate(-45deg) scale(1.35); }
+    50%, 70% { transform: rotate(-45deg) scale(1); }
+    95% { transform: rotate(-135deg) scale(1.35); }
+    100% { transform: rotate(-135deg) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) { .sq-a, .sq-b { animation: none; } .sq-b { transform: rotate(45deg); } }
+}

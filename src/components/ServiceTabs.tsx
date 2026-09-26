@@ -48,7 +48,8 @@ export function ServiceTabs() {
         </div>
 
         {/* Tabs */}
-        <div role="tablist" aria-label="Service type" className="mt-14 grid grid-cols-2 border-b border-rule">
+        {/* Two blocks, split by a gap: the active one is solid ink. */}
+        <div role="tablist" aria-label="Service type" className="mt-14 grid grid-cols-2 gap-3 sm:gap-4">
           {services.map((s, i) => {
             const on = tab === i;
             return (
@@ -59,16 +60,17 @@ export function ServiceTabs() {
                 aria-selected={on}
                 aria-controls={`svc-panel-${s.key}`}
                 onClick={() => setTab(i)}
-                className="group relative flex items-end justify-between gap-4 pb-5 pt-2 text-left"
+                className={`group flex min-h-[96px] items-end justify-between gap-4 rounded-[22px] border p-5 text-left transition-colors duration-500 sm:min-h-[140px] sm:p-7 ${
+                  on ? "border-ink bg-ink" : "border-rule bg-paper hover:border-rule-2"
+                }`}
               >
-                <span className={`text-[26px] leading-none sm:text-[clamp(30px,3.6vw,56px)] tracking-[-0.04em] transition-colors duration-300 ${on ? "text-ink" : "text-ink/25 group-hover:text-ink/50"}`}>
+                <span className={`text-[24px] leading-none tracking-[-0.04em] transition-colors duration-500 sm:text-[clamp(30px,3.6vw,56px)] ${on ? "text-paper" : "text-ink/35 group-hover:text-ink/60"}`}>
                   {s.name}
                 </span>
-                <span className={`mono mb-1 hidden items-center gap-2 whitespace-nowrap text-[10.5px] transition-colors sm:flex ${on ? "text-ink" : "text-ink-3"}`}>
+                <span className={`mono mb-1 hidden items-center gap-2 whitespace-nowrap text-[10.5px] transition-colors duration-500 sm:flex ${on ? "text-paper/70" : "text-ink-3"}`}>
                   {on && <span className="rec-dot" />}
                   {String(s.groups.length).padStart(2, "0")} services
                 </span>
-                <span className={`absolute inset-x-0 -bottom-px h-[2px] origin-left bg-ink transition-transform duration-500 ${on ? "scale-x-100" : "scale-x-0"}`} />
               </button>
             );
           })}
