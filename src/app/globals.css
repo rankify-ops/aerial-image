@@ -513,8 +513,8 @@
    * stays put at full throttle and racks out of focus (blur + a touch of
    * shrink) while the screen dips to black. No fly-at-camera — Tom cut that.
    */
-  .preloader > *:not(.pre-black):not(.pre-stage-wrap):not(.pre-photo):not(.pre-vignette) { transition: opacity 0.35s var(--ease); }
-  .preloader.is-exit > *:not(.pre-black):not(.pre-stage-wrap):not(.pre-photo):not(.pre-vignette) { opacity: 0; }
+  .preloader > *:not(.pre-black):not(.pre-stage-wrap) { transition: opacity 0.35s var(--ease); }
+  .preloader.is-exit > *:not(.pre-black):not(.pre-stage-wrap) { opacity: 0; }
   .preloader.is-exit .pre-ring,
   .preloader.is-exit .pre-readout { opacity: 0; transition: opacity 0.3s var(--ease); }
   .preloader.is-exit .pre-drone { animation: propDefocus 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
@@ -546,23 +546,3 @@
   }
 }
 
-/* Focus-pull loader layers. */
-@layer components {
-  .pre-photo {
-    position: absolute;
-    inset: -40px;
-    background-size: cover;
-    background-position: center;
-    transition: filter 0.2s linear, transform 0.4s var(--ease);
-    will-change: filter, transform;
-  }
-  .pre-vignette {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 50% 48%, rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.32) 100%),
-      linear-gradient(180deg, rgb(0 0 0 / 0.22), transparent 22%, transparent 78%, rgb(0 0 0 / 0.28));
-  }
-  .osd-light.is-white i { border-color: rgb(255 255 255 / 0.7); }
-  .preloader .pre-readout, .preloader .pre-ui { text-shadow: 0 1px 12px rgb(0 0 0 / 0.35); }
-}

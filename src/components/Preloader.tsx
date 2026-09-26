@@ -1,18 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { site } from "@/content/site";
-import { asset } from "@/lib/basePath";
-import { Mark } from "./v2/Phone";
 
 /*
- * Focus-pull loader, shown until the hero footage has buffered enough to play.
- * Their hero still fills the frame, starting heavily defocused; a thin-line
- * lens aperture in the centre opens stop by stop (f/22 → f/1.4) as the hero
- * <video> buffers (target ~3s, or readyState 4), and the image racks into
- * focus with it. ISO / shutter readouts are decorative.
- * Exit: wide open → the blades clear, dip to black, black dissolves onto the page.
- * (Earlier versions were a quad, then a single prop — Tom asked for "not a drone".)
+ * Minimal loader, shown until the hero footage has buffered enough to play:
+ * a small thin-line lens aperture on the plain ground, opening stop by stop
+ * (f/22 → f/1.4) as the hero <video> buffers (target ~3s, or readyState 4),
+ * with a tiny f-stop / % readout underneath.
+ * Exit: wide open → blades clear, dip to black, black dissolves onto the page.
+ * (Tom rejected a quad, a prop, and a full-screen photo focus-pull — keep it small.)
  *
  * Server-rendered visible (no flash of the page first), hidden for no-JS via
  * the .js class, never holds the page longer than MAX_MS.
@@ -102,43 +98,12 @@ export function Preloader() {
   const stop = STOPS[Math.min(STOPS.length - 1, Math.floor(p * STOPS.length))];
   // Blades open with a slight twist, like a real iris; fully clear once exiting.
   const ap = aperture(phase === "load" || phase === "armed" ? 0.08 + p * 0.62 : 1.2, (1 - p) * 40);
-  const blur = Math.max(0, (1 - p) * 26);
 
   return (
     <div className={`preloader ${phase === "exit" ? "is-exit" : ""} ${phase === "reveal" ? "is-reveal" : ""}`} role="status" aria-live="polite" aria-label={`Loading ${pct}%`}>
-      {/* Their hero still, racking into focus */}
-      <div
-        className="pre-photo"
-        aria-hidden
-        style={{
-          backgroundImage: `url(${asset("/video/hero-poster.jpg")})`,
-          filter: `blur(${blur.toFixed(1)}px) saturate(${(0.6 + p * 0.4).toFixed(2)})`,
-          transform: `scale(${(1.12 - p * 0.08).toFixed(3)})`,
-        }}
-      />
-      <div className="pre-vignette" aria-hidden />
-
-      {/* Viewfinder frame */}
-      <div className="osd-light is-white" aria-hidden>
-        <i className="k1" />
-        <i className="k2" />
-        <i className="k3" />
-        <i className="k4" />
-      </div>
-      <div className="pre-ui mono absolute inset-x-6 top-6 flex items-center justify-between text-[10px] text-white/75 sm:inset-x-10 sm:top-9">
-        <span className="flex items-center gap-3 text-white">
-          <Mark className="h-4 w-5 bg-white" />
-          Aerial Image <span className="text-white/60">— Focus</span>
-        </span>
-        <span className="flex items-center gap-2 text-white">
-          <span className="rec-dot blink" /> {phase === "load" ? "Standby" : "Rec"}
-        </span>
-      </div>
-
-      {/* Aperture */}
       <div className="pre-stage-wrap absolute inset-0 flex flex-col items-center justify-center">
-        <div className="pre-drone relative h-[240px] w-[240px] sm:h-[300px] sm:w-[300px]">
-          <svg viewBox="-20 -20 240 240" className="h-full w-full overflow-visible" aria-hidden>
+        <div className="pre-drone h-[72px] w-[72px]">
+          <svg viewBox="-6 -6 212 212" className="h-full w-full" aria-hidden>
             <defs>
               <clipPath id="apRim">
                 <circle cx="100" cy="100" r="100" />
@@ -146,52 +111,21 @@ export function Preloader() {
             </defs>
             {!ap.clear && (
               <g clipPath="url(#apRim)">
-                <path d={ap.fill} fillRule="evenodd" fill="rgb(255 255 255 / 0.16)" />
+                <path d={ap.fill} fillRule="evenodd" fill="rgb(13 15 18 / 0.08)" />
                 {ap.lines.map((d, i) => (
-                  <path key={i} d={d} stroke="rgb(255 255 255 / 0.85)" strokeWidth="0.9" fill="none" />
+                  <path key={i} d={d} stroke="var(--ink)" strokeWidth="4" fill="none" />
                 ))}
               </g>
             )}
-            <circle cx="100" cy="100" r="100" fill="none" stroke="rgb(255 255 255 / 0.9)" strokeWidth="1.1" />
-            {/* Focus scale, turning as focus pulls */}
-            <g transform={`rotate(${(p * 120).toFixed(2)} 100 100)`}>
-              {Array.from({ length: 48 }, (_, i) => (
-                <line
-                  key={i}
-                  x1="100"
-                  y1={i % 4 === 0 ? -14 : -10}
-                  x2="100"
-                  y2="-6"
-                  stroke="rgb(255 255 255 / 0.6)"
-                  strokeWidth={i % 4 === 0 ? 1.1 : 0.6}
-                  transform={`rotate(${i * 7.5} 100 100)`}
-                />
-              ))}
-            </g>
-            <path d="M92 100h16M100 92v16" stroke="#fff" strokeWidth="1" />
+            <circle cx="100" cy="100" r="100" fill="none" stroke="var(--ink)" strokeWidth="5" />
           </svg>
         </div>
-
-        {/* Readout */}
-        <div className="pre-readout mt-10 text-center text-white">
-          <p className="text-[clamp(56px,8vw,104px)] leading-none tracking-[-0.05em] tabular-nums">
-            <span className="text-white/45">f/</span>
-            {stop}
-          </p>
-          <p className="mono mt-4 flex items-center justify-center gap-3 text-[10.5px] text-white/75 tabular-nums">
-            <span>
-              Focus <span className="text-white">{String(pct).padStart(3, "0")}%</span>
-            </span>
-            <span className="text-white/30">·</span>
-            <span>ISO 100</span>
-            <span className="text-white/30">·</span>
-            <span>1/1000</span>
-          </p>
-        </div>
+        <p className="pre-readout mono mt-6 flex items-center gap-3 text-[10.5px] text-ink-3 tabular-nums">
+          <span className="text-ink">f/{stop}</span>
+          <span className="text-ink/20">·</span>
+          <span>{String(pct).padStart(3, "0")}%</span>
+        </p>
       </div>
-
-      <p className="mono absolute bottom-7 left-6 text-[10px] text-white/75 sm:bottom-10 sm:left-10">{phase === "load" ? "Pulling focus" : "Wide open"}</p>
-      <p className="mono absolute bottom-7 right-6 hidden text-[10px] text-white/75 sm:bottom-10 sm:right-10 sm:block">{site.tagline.join(" • ")}</p>
       <div className="pre-black" aria-hidden />
     </div>
   );
