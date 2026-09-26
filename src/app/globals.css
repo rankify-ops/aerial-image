@@ -576,6 +576,11 @@
 }
 
 /* ── Custom cursor (desktop, fine pointer) ─────────────────────────────── */
+/*
+ * Fully solid — no blend modes, no opacity: an ink dot and ring, each with a
+ * crisp white edge so the cursor reads on light pages and over dark or
+ * mid-tone footage alike (Tom: the inverting version vanished over video).
+ */
 @layer components {
   html.has-cursor,
   html.has-cursor * { cursor: none !important; }
@@ -583,20 +588,20 @@
   html.has-cursor textarea,
   html.has-cursor select { cursor: text !important; }
 
-  .cursor { position: fixed; top: 0; left: 0; width: 0; height: 0; z-index: 300; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: difference; }
-  .cursor[data-mode="play"] { mix-blend-mode: normal; }
-  .cursor[data-hidden="1"] { opacity: 0; }
+  .cursor { position: fixed; top: 0; left: 0; width: 0; height: 0; z-index: 300; pointer-events: none; }
+  .cursor[data-hidden="1"] { visibility: hidden; }
   html:not(.has-cursor) .cursor { display: none; }
 
   .cur-ring-pos, .cur-dot-pos { position: fixed; top: 0; left: 0; will-change: transform; }
 
   .cur-dot {
-    width: 6px;
-    height: 6px;
-    margin: -3px 0 0 -3px;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
     border-radius: 999px;
-    background: #fff;
-    transition: transform 0.3s var(--ease), opacity 0.2s;
+    background: var(--ink);
+    box-shadow: 0 0 0 2px #fff;
+    transition: transform 0.25s var(--ease);
   }
   .cur-ring {
     display: flex;
@@ -606,35 +611,35 @@
     height: 38px;
     margin: -19px 0 0 -19px;
     border-radius: 999px;
-    border: 1.5px solid #fff;
+    border: 2px solid var(--ink);
+    /* White edge inside and out so the ink stroke never disappears on dark footage. */
+    box-shadow: 0 0 0 1.5px #fff, inset 0 0 0 1.5px #fff;
     transition:
-      width 0.45s var(--ease), height 0.45s var(--ease), margin 0.45s var(--ease),
-      background-color 0.35s var(--ease), border-color 0.35s var(--ease), border-radius 0.35s var(--ease),
-      transform 0.25s var(--ease);
+      width 0.35s var(--ease), height 0.35s var(--ease), margin 0.35s var(--ease),
+      background-color 0.25s var(--ease), border-color 0.25s var(--ease), border-width 0.25s var(--ease),
+      border-radius 0.25s var(--ease), transform 0.2s var(--ease);
   }
   .cur-label {
     font-family: var(--font-mono-face), ui-monospace, monospace;
     font-size: 10px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--paper);
-    opacity: 0;
-    transform: scale(0.6);
-    transition: opacity 0.25s var(--ease), transform 0.35s var(--ease);
+    color: #fff;
+    display: none;
   }
 
-  /* Link: a disc that inverts what's under it. */
-  .cursor[data-mode="link"] .cur-ring { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: #fff; }
-  .cursor[data-mode="link"] .cur-dot { opacity: 0; }
+  /* Link: ring grows and thickens, dot swells — still solid. */
+  .cursor[data-mode="link"] .cur-ring { width: 56px; height: 56px; margin: -28px 0 0 -28px; border-width: 3px; }
+  .cursor[data-mode="link"] .cur-dot { transform: scale(1.5); }
 
-  /* Play: solid ink bubble with a label (no blend so the label stays legible). */
-  .cursor[data-mode="play"] .cur-ring { width: 84px; height: 84px; margin: -42px 0 0 -42px; background: var(--ink); border-color: var(--ink); }
-  .cursor[data-mode="play"] .cur-label { opacity: 1; transform: none; }
-  .cursor[data-mode="play"] .cur-dot { opacity: 0; }
+  /* Play: solid ink bubble with a white label. */
+  .cursor[data-mode="play"] .cur-ring { width: 84px; height: 84px; margin: -42px 0 0 -42px; background: var(--ink); box-shadow: 0 0 0 2px #fff; }
+  .cursor[data-mode="play"] .cur-label { display: block; }
+  .cursor[data-mode="play"] .cur-dot { visibility: hidden; }
 
-  /* Text: a slim caret bar. */
-  .cursor[data-mode="text"] .cur-ring { width: 3px; height: 28px; margin: -14px 0 0 -1.5px; border-radius: 2px; background: #fff; }
-  .cursor[data-mode="text"] .cur-dot { opacity: 0; }
+  /* Text: a slim solid caret bar. */
+  .cursor[data-mode="text"] .cur-ring { width: 4px; height: 28px; margin: -14px 0 0 -2px; border-radius: 2px; border-width: 0; background: var(--ink); box-shadow: 0 0 0 1.5px #fff; }
+  .cursor[data-mode="text"] .cur-dot { visibility: hidden; }
 
   /* Press. */
   .cursor[data-down="1"] .cur-ring { transform: scale(0.82); }

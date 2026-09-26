@@ -121,7 +121,7 @@ export function Hero2() {
               <span className="rise">
                 <span style={{ animationDelay: "0.22s" }}>
                   <em>perspective</em>
-                  <span className="text-ink/25">.</span>
+                  .
                 </span>
               </span>
             </h1>

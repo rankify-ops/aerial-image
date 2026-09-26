@@ -98,7 +98,7 @@ export function Hero() {
             <h1 className="mt-8 text-[clamp(48px,6.2vw,112px)] leading-[0.88] tracking-[-0.055em] sm:mt-10">
               <span className="rise">
                 <span style={{ animationDelay: "0.15s" }}>
-                  <span className="dim">A whole</span> new
+                  A whole new
                 </span>
               </span>
               <span className="rise">
