@@ -5,18 +5,20 @@ import { licences, site } from "@/content/site";
 import { asset } from "@/lib/basePath";
 import { Arrow, Play } from "../ui";
 import { openVideo } from "../VideoModal";
+import { HeroServices } from "../HeroServices";
 
 /*
  * ALT hero: the showreel full-screen, dressed as an FPV goggle feed — corner
  * brackets, REC + timecode, channel/battery, a heading tape along the top and
- * altitude / speed ladders down the sides. The headline and buttons sit in a
- * frosted-glass panel (same glass as the header) that floats over the footage
- * and drifts up over the next section as you scroll. OSD numbers are decorative.
+ * altitude / speed ladders down the sides. The headline is free text over the
+ * footage (bottom-left); the buttons — showreel + the eight service tiles — sit
+ * in a frosted-glass panel on the right, like a quote form. Both lift on
+ * scroll. OSD numbers are decorative.
  */
 /** Vertical OSD tape (altitude left, speed right); the parent scrolls it via the ref. */
 function Ladder({ tape, side }: { tape: React.RefObject<HTMLDivElement | null>; side: "l" | "r" }) {
   return (
-  <div className={`absolute top-1/2 hidden h-[240px] w-10 -translate-y-1/2 overflow-hidden md:block ${side === "l" ? "left-6 lg:left-10" : "right-6 lg:right-10"}`} style={{ maskImage: "linear-gradient(transparent, #000 20%, #000 80%, transparent)" }}>
+  <div className={`absolute hidden h-[220px] w-10 -translate-y-1/2 overflow-hidden md:block ${side === "l" ? "left-6 lg:left-10" : "right-6 lg:right-10"}`} style={{ top: "36%", maskImage: "linear-gradient(transparent, #000 20%, #000 80%, transparent)" }}>
     <div ref={tape} className="absolute inset-x-0 -top-6 flex flex-col">
       {Array.from({ length: 14 }, (_, i) => (
         <span key={i} className={`flex h-6 items-center ${side === "l" ? "justify-start" : "justify-end"}`}>
@@ -142,25 +144,25 @@ export function HeroAlt() {
           {/* Side ladders + readouts */}
           <Ladder tape={altTape} side="l" />
           <Ladder tape={spdTape} side="r" />
-          <span className="mono absolute left-[70px] top-1/2 hidden -translate-y-1/2 text-[11px] tabular-nums md:block lg:left-[84px]">
+          <span className="mono absolute left-[70px] hidden -translate-y-1/2 text-[11px] tabular-nums md:block lg:left-[84px]" style={{ top: "36%" }}>
             <span className="block text-[9px] text-white/60">ALT</span>
             <span ref={alt}>018</span>
             <span className="text-white/60">M</span>
           </span>
-          <span className="mono absolute right-[70px] top-1/2 hidden -translate-y-1/2 text-right text-[11px] tabular-nums md:block lg:right-[84px]">
+          <span className="mono absolute right-[70px] hidden -translate-y-1/2 text-right text-[11px] tabular-nums md:block lg:right-[84px]" style={{ top: "36%" }}>
             <span className="block text-[9px] text-white/60">SPD</span>
             <span ref={spd}>062</span>
             <span className="text-white/60">KM/H</span>
           </span>
 
           {/* Centre reticle */}
-          <svg width="46" height="46" viewBox="0 0 40 40" fill="none" className="absolute left-1/2 top-[42%] hidden -translate-x-1/2 -translate-y-1/2 lg:block">
+          <svg width="46" height="46" viewBox="0 0 40 40" fill="none" className="absolute left-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block" style={{ top: "36%" }}>
             <circle cx="20" cy="20" r="3" stroke="white" strokeWidth="1.2" />
             <path d="M20 4v8M20 28v8M4 20h8M28 20h8" stroke="white" strokeWidth="1.2" />
           </svg>
 
           {/* Bottom-right: licences */}
-          <div className="mono absolute bottom-8 right-8 hidden items-center gap-2 text-[9.5px] sm:bottom-10 sm:right-12 md:flex">
+          <div className="mono absolute bottom-8 right-8 hidden items-center gap-2 text-[9.5px] sm:bottom-10 sm:right-12 md:flex lg:hidden">
             CASA
             {licences.map((l) => (
               <span key={l} className="rounded-full border border-white/40 px-2 py-1">
@@ -170,36 +172,48 @@ export function HeroAlt() {
           </div>
         </div>
 
-        {/* ── Frosted-glass hero panel ─────────────────────── */}
-        <div
-          className="absolute inset-x-3 bottom-3 sm:inset-x-auto sm:bottom-8 sm:left-8 lg:bottom-10 lg:left-12"
-          style={{ transform: "translateY(calc(var(--s) * -90px))" }}
-        >
-          <div className="glass w-full rounded-[26px] p-6 sm:w-[560px] sm:rounded-[30px] sm:p-9 lg:w-[620px]">
-            <p className="fade-up mono flex items-center gap-2 whitespace-nowrap text-[8.5px] tracking-[0.08em] text-ink-2 sm:gap-2.5 sm:text-[10px] sm:tracking-[0.14em]">
+        {/* ── Content: free headline left, frosted-glass button panel right ── */}
+        <div className="absolute inset-0 flex flex-col justify-end gap-6 p-4 pb-5 sm:p-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:p-12 lg:pb-14">
+          {/* Free text over the footage — no card */}
+          <div className="alt-text max-w-[760px] text-white" style={{ transform: "translateY(calc(var(--s) * -60px))" }}>
+            <p className="fade-up mono flex items-center gap-2 whitespace-nowrap text-[8.5px] tracking-[0.08em] sm:gap-2.5 sm:text-[10.5px] sm:tracking-[0.14em]">
               <span className="rec-dot blink" />
               {site.tagline.join(" • ")}
             </p>
-            <h1 className="mt-6 text-[clamp(44px,5.4vw,84px)] leading-[0.9] tracking-[-0.05em] text-ink">
+            <h1 className="mt-5 text-[clamp(52px,7.4vw,128px)] leading-[0.86] tracking-[-0.055em] text-white sm:mt-7">
               <span className="rise">
                 <span style={{ animationDelay: "0.1s" }}>
-                  <span className="dim">A whole</span> new
+                  <span className="text-white/55">A whole</span> new
                 </span>
               </span>
               <span className="rise">
                 <span style={{ animationDelay: "0.22s" }}>perspective.</span>
               </span>
             </h1>
-            <p className="fade-up mt-5 max-w-[460px] text-[15.5px] leading-relaxed text-ink-2" style={{ animationDelay: "0.4s" }}>
-              Aerial Image specialise in <span className="text-ink">FPV (First-Person-View) cinematic capture and piloting services.</span>
+            <p className="fade-up mt-6 max-w-[500px] text-[16px] leading-relaxed text-white/85 sm:text-[17px]" style={{ animationDelay: "0.4s" }}>
+              Aerial Image specialise in <span className="text-white">FPV (First-Person-View) cinematic capture and piloting services.</span>
             </p>
-            <div className="fade-up mt-7 flex flex-col gap-2.5 sm:flex-row" style={{ animationDelay: "0.5s" }}>
-              <a href="#contact" className="btn btn-primary w-full sm:w-auto">
+          </div>
+
+          {/* Frosted-glass panel, like a quote form: showreel + the 8 service buttons */}
+          <div className="glass w-full shrink-0 rounded-[26px] p-3 sm:rounded-[30px] sm:p-4 lg:w-[520px]" style={{ transform: "translateY(calc(var(--s) * -110px))" }}>
+            <div className="flex items-center justify-between gap-3 px-2 pb-3 pt-1 sm:px-3">
+              <p className="mono flex items-center gap-2 text-[10px] text-ink">
+                <span className="rec-dot" /> Services
+              </p>
+              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="mono flex items-center gap-2 rounded-full bg-ink px-3.5 py-2 text-[9.5px] text-paper transition-transform hover:scale-[1.03]">
+                <Play size={9} /> Watch Showreel
+              </button>
+            </div>
+            {/* Desktop: all eight buttons */}
+            <div className="hidden lg:block">
+              <HeroServices />
+            </div>
+            {/* Phones/tablets: just the two CTAs */}
+            <div className="grid gap-2 lg:hidden">
+              <a href="#contact" className="btn btn-primary w-full">
                 Work with us <Arrow />
               </a>
-              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-ghost w-full bg-white/40 sm:w-auto">
-                <Play size={11} /> Watch Showreel
-              </button>
             </div>
           </div>
         </div>

@@ -703,3 +703,8 @@
 
   @media (prefers-reduced-motion: reduce) { .svc-twist-ink { transition: none; } }
 }
+
+/* ALT hero: free text over footage. */
+@layer components {
+  .alt-text { text-shadow: 0 2px 24px rgb(0 0 0 / 0.35), 0 1px 3px rgb(0 0 0 / 0.25); }
+}
