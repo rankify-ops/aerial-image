@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { site, licences } from "@/content/site";
 import { asset } from "@/lib/basePath";
-import { Arrow, Play } from "./ui";
+import { Arrow, Play, pauseOffscreen } from "./ui";
 import { openVideo } from "./VideoModal";
 import { HeroServices } from "./HeroServices";
 
@@ -136,6 +136,7 @@ export function Hero() {
             }}
           >
             <video
+              ref={pauseOffscreen}
               className="absolute inset-0 h-full w-full object-cover"
               autoPlay
               muted

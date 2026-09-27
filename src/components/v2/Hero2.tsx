@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { licences, projects, site } from "@/content/site";
 import { asset } from "@/lib/basePath";
-import { Arrow, Loop, Play } from "../ui";
+import { Arrow, Loop, Play, pauseOffscreen } from "../ui";
 import { openVideo } from "../VideoModal";
 
 /*
@@ -77,6 +77,7 @@ export function Hero2() {
       <div className="relative h-full overflow-hidden rounded-[26px] bg-ink sm:rounded-[34px]">
         {/* Footage */}
         <video
+          ref={pauseOffscreen}
           className="absolute inset-0 h-full w-full object-cover"
           style={{ transform: "scale(calc(1.02 + var(--s) * 0.12))" }}
           autoPlay

@@ -117,7 +117,11 @@ export function Loop({ slug, className = "", hover = false }: { slug: string; cl
           return;
         }
         if (visible) candidates.set(v, e.intersectionRatio);
-        else candidates.delete(v);
+        else {
+          // Off screen: out of the budget, and stop decoding now.
+          candidates.delete(v);
+          v.pause();
+        }
         rebalance();
       },
       { threshold: [0, 0.25, 0.5, 0.75, 1] },
@@ -133,6 +137,7 @@ export function Loop({ slug, className = "", hover = false }: { slug: string; cl
     return () => {
       io.disconnect();
       candidates.delete(v);
+      v.pause();
       rebalance();
       host?.removeEventListener("pointerenter", on);
       host?.removeEventListener("pointerleave", off);
@@ -151,6 +156,20 @@ export function Loop({ slug, className = "", hover = false }: { slug: string; cl
       aria-hidden
     />
   );
+}
+
+/**
+ * Ref callback for the autoplaying hero videos: they sit outside the budget
+ * (always wanted on load) but shouldn't keep decoding once scrolled away.
+ */
+export function pauseOffscreen(v: HTMLVideoElement | null) {
+  if (!v) return;
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) v.play().catch(() => {});
+    else v.pause();
+  });
+  io.observe(v);
+  return () => io.disconnect();
 }
 
 export function Arrow({ className = "" }: { className?: string }) {
