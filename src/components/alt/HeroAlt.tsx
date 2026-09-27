@@ -18,7 +18,7 @@ import { HeroServices } from "../HeroServices";
 /** Vertical OSD tape (altitude left, speed right); the parent scrolls it via the ref. */
 function Ladder({ tape, side }: { tape: React.RefObject<HTMLDivElement | null>; side: "l" | "r" }) {
   return (
-  <div className={`absolute hidden h-[220px] w-10 -translate-y-1/2 overflow-hidden md:block ${side === "l" ? "left-6 lg:left-10" : "right-6 lg:right-10"}`} style={{ top: "36%", maskImage: "linear-gradient(transparent, #000 20%, #000 80%, transparent)" }}>
+  <div className={`absolute hidden h-[220px] w-10 -translate-y-1/2 overflow-hidden md:block ${side === "l" ? "left-6 lg:left-10" : "right-6 lg:right-10"}`} style={{ top: "36%", maskImage: "linear-gradient(transparent, #000 20%, #000 80%, transparent)", WebkitMaskImage: "linear-gradient(transparent, #000 20%, #000 80%, transparent)" }}>
     <div ref={tape} className="absolute inset-x-0 -top-6 flex flex-col">
       {Array.from({ length: 14 }, (_, i) => (
         <span key={i} className={`flex h-6 items-center ${side === "l" ? "justify-start" : "justify-end"}`}>
@@ -97,10 +97,10 @@ export function HeroAlt() {
           loop
           playsInline
           preload="auto"
-          poster={asset("/video/hero-poster.jpg")}
+          poster={asset("/video/hero-poster.webp")}
           aria-label="Aerial Image FPV showreel"
         >
-          <source src={asset("/video/hero-540.mp4")} type="video/mp4" media="(max-width: 767px)" />
+          <source src={asset("/video/hero-mobile.mp4")} type="video/mp4" media="(max-width: 767px)" />
           <source src={asset("/video/hero-1080.mp4")} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/5 to-black/40" />
@@ -118,7 +118,7 @@ export function HeroAlt() {
               <span className="rec-dot blink" /> REC <span ref={tc} className="tabular-nums">00:00:00:00</span>
             </span>
             {/* Heading tape */}
-            <span className="relative hidden h-7 w-[280px] overflow-hidden lg:block" style={{ maskImage: "linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent)" }}>
+            <span className="relative hidden h-7 w-[280px] overflow-hidden lg:block" style={{ maskImage: "linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent)", WebkitMaskImage: "linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent)" }}>
               <span ref={hdgTape} className="absolute inset-y-0 -left-6 flex items-end">
                 {Array.from({ length: 16 }, (_, i) => (
                   <i key={i} className={`mr-[23px] block w-px bg-white/80 ${i % 3 ? "h-1.5" : "h-3"}`} />

@@ -185,7 +185,7 @@ export function Header() {
               onClick={() => setOpen(false)}
               className="flex items-baseline gap-4 border-b border-rule py-5 text-[34px] tracking-tight text-ink"
             >
-              <span className="mono text-rec">0{i + 1}</span>
+              <span className="mono text-rec-ink">0{i + 1}</span>
               {label}
             </a>
           ))}

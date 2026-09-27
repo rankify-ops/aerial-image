@@ -12,7 +12,8 @@
 :root {
   --ink: #0d0f12;
   --ink-2: #3d424a;
-  --ink-3: #80858d;
+  --ink-3: #686d75; /* AA (4.5:1+) for small text on paper/white */
+  --ink-dim: #80858d; /* display-size greys — large text only needs 3:1 */
   --paper: #f3f3ef;
   --white: #ffffff;
   --mist: #e9e9e4;
@@ -95,7 +96,7 @@
     line-height: 0.98;
     letter-spacing: -0.04em;
   }
-  .dim { color: var(--ink-3); }
+  .dim { color: var(--ink-dim); }
 
   /* REC dot: a live ring radiates out of it on every instance. */
   .rec-dot {
@@ -680,4 +681,9 @@
 /* ALT hero: free text over footage. */
 @layer components {
   .alt-text { text-shadow: 0 2px 24px rgb(0 0 0 / 0.35), 0 1px 3px rgb(0 0 0 / 0.25); }
+}
+
+/* Browsers without small-viewport units (pre-2022 Safari/Chrome) fall back to vh. */
+@supports not (height: 100svh) {
+  .h-[100svh] { height: 100vh; }
 }

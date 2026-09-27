@@ -38,7 +38,7 @@ export function MegaPanel({ which, close }: { which: MegaKey; close: () => void 
 function Label({ i, children }: { i: string; children: React.ReactNode }) {
   return (
     <p className="mono flex items-center gap-3 text-[10px] text-ink-3">
-      <span className="text-rec">{i}</span>
+      <span className="text-rec-ink">{i}</span>
       <span className="h-px w-6 bg-rule-2" />
       {children}
     </p>
@@ -101,7 +101,7 @@ function Work({ close }: { close: () => void }) {
                 onClick={() => { close(); openVideo(q.id, q.title); }}
                 className="group flex w-full items-center gap-4 py-2.5 text-left"
               >
-                <span className={`mono w-6 text-[10px] ${i === hi ? "text-rec" : "text-ink-3"}`}>{String(i + 1).padStart(2, "0")}</span>
+                <span className={`mono w-6 text-[10px] ${i === hi ? "text-rec-ink" : "text-ink-3"}`}>{String(i + 1).padStart(2, "0")}</span>
                 <span className={`min-w-0 flex-1 truncate text-[16px] tracking-tight transition-colors ${i === hi ? "text-ink" : "text-ink/45"}`}>{q.title}</span>
                 <span className="mono text-[10px] text-ink-3">{RUNTIME[q.id]}</span>
               </button>

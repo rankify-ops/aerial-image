@@ -41,7 +41,7 @@ for (const f of LOGOS) {
 await sharp(`${RAW}/logo-white-orig.png`).trim().resize({ height: 240 }).png().toFile(`${OUT}/ai-mark.png`);
 
 // OG card + favicons from the FPV coast frame.
-await sharp("public/video/hero-poster.jpg").resize(1200, 630, { fit: "cover" }).jpeg({ quality: 82 }).toFile(`${OUT}/og.jpg`);
+await sharp("public/video/hero-poster.webp").resize(1200, 630, { fit: "cover" }).jpeg({ quality: 82 }).toFile(`${OUT}/og.jpg`);
 for (const s of [32, 180, 192]) {
   const pad = Math.round(s * 0.18);
   const mark = await sharp(`${RAW}/logo-white-orig.png`).trim().resize(s - pad * 2, s - pad * 2, { fit: "contain", background: "#0000" }).png().toBuffer();

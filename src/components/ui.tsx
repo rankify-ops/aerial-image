@@ -65,40 +65,75 @@ export function Photo({
   );
 }
 
+/*
+ * Video budget shared by every <Loop>. Autoplaying clips compete for the
+ * device's hardware decoder; phones stutter past two or three at once. So an
+ * autoplay candidate must be ≥50% on screen, and only the MAX most-visible
+ * candidates actually play — the rest sit on their poster frame. Hover-driven
+ * tiles (desktop) bypass the budget: they only play under the pointer.
+ */
+const touch = typeof window !== "undefined" && !window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+const MAX = touch ? 2 : 4;
+const candidates = new Map<HTMLVideoElement, number>(); // video → visible ratio
+let scheduled = false;
+function rebalance() {
+  if (scheduled) return;
+  scheduled = true;
+  requestAnimationFrame(() => {
+    scheduled = false;
+    const ranked = [...candidates.entries()].filter(([, r]) => r >= 0.5).sort((a, b) => b[1] - a[1]);
+    const allowed = new Set(ranked.slice(0, MAX).map(([v]) => v));
+    candidates.forEach((_, v) => {
+      if (allowed.has(v)) {
+        if (v.paused) v.play().catch(() => {});
+      } else if (!v.paused) v.pause();
+    });
+  });
+}
+
 /**
- * Muted loop from public/video that only plays while on screen, so a page of
- * twenty clips never decodes more than the two or three you can see.
- * `hover` makes it play on pointer hover instead (desktop), still autoplaying
- * on touch screens where there is no hover.
+ * Muted loop from public/video that only plays while on screen (within the
+ * shared video budget above). `hover` makes it play on pointer hover instead
+ * (desktop), still autoplaying on touch screens where there is no hover.
+ * Data Saver / reduced motion: poster frame only.
  */
 export function Loop({ slug, className = "", hover = false }: { slug: string; className?: string; hover?: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    const canHover = window.matchMedia("(hover: hover)").matches;
+    const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+    if (reduce || saveData) return;
+
+    const hoverMode = hover && canHover;
     let visible = false;
-    const play = () => v.play().catch(() => {});
     const io = new IntersectionObserver(
       ([e]) => {
         visible = e.isIntersecting;
-        if (!visible) v.pause();
-        else if (!hover || !canHover) play();
+        if (hoverMode) {
+          if (!visible) v.pause();
+          return;
+        }
+        if (visible) candidates.set(v, e.intersectionRatio);
+        else candidates.delete(v);
+        rebalance();
       },
-      { rootMargin: "120px" },
+      { threshold: [0, 0.25, 0.5, 0.75, 1] },
     );
     io.observe(v);
     const host = v.closest(".tile");
-    const on = () => visible && play();
+    const on = () => visible && v.play().catch(() => {});
     const off = () => v.pause();
-    if (hover && canHover && host) {
+    if (hoverMode && host) {
       host.addEventListener("pointerenter", on);
       host.addEventListener("pointerleave", off);
     }
     return () => {
       io.disconnect();
+      candidates.delete(v);
+      rebalance();
       host?.removeEventListener("pointerenter", on);
       host?.removeEventListener("pointerleave", off);
     };
@@ -108,7 +143,7 @@ export function Loop({ slug, className = "", hover = false }: { slug: string; cl
       ref={ref}
       className={className}
       src={asset(`/video/${slug}.mp4`)}
-      poster={asset(`/video/${slug}.jpg`)}
+      poster={asset(`/video/${slug}.webp`)}
       muted
       loop
       playsInline
@@ -138,7 +173,7 @@ export function Play({ size = 14 }: { size?: number }) {
 export function Kicker({ index, children, light = false }: { index: string; children: React.ReactNode; light?: boolean }) {
   return (
     <p className={`mono flex items-center gap-4 ${light ? "text-white/60" : "text-ink-3"}`}>
-      <span className="text-rec">{index}</span>
+      <span className="text-rec-ink">{index}</span>
       <span className={`h-px w-10 ${light ? "bg-white/30" : "bg-rule-2"}`} />
       <span>{children}</span>
     </p>

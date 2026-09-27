@@ -50,7 +50,7 @@ export function Board() {
         <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
             <p className="mono flex items-center gap-4 text-ink-3">
-              <span className="text-rec">05</span>
+              <span className="text-rec-ink">05</span>
               <span className="h-px w-10 bg-rule-2" />
               About Us
             </p>
@@ -127,7 +127,7 @@ export function Board() {
               <div key={p.title} className={`nglass rounded-[28px] p-7 ${i === 0 ? "sm:col-span-2 lg:col-span-7" : "lg:col-span-6"}`}>
                 <div className="flex items-baseline justify-between gap-4">
                   <p className="serif text-[26px] leading-none text-ink">{p.title}</p>
-                  <span className="mono text-[9.5px] text-rec">0{i + 2}</span>
+                  <span className="mono text-[9.5px] text-rec-ink">0{i + 2}</span>
                 </div>
                 <p className="mt-4 text-[14px] leading-relaxed text-ink-2">{p.body}</p>
               </div>

@@ -62,7 +62,7 @@ export function FlightDeck() {
 
         <div className="wrap relative h-full">
           <p className="mono absolute left-4 top-24 flex items-center gap-4 text-ink-3 sm:left-7 lg:left-11">
-            <span className="text-rec">01</span>
+            <span className="text-rec-ink">01</span>
             <span className="h-px w-10 bg-rule-2" />
             FPV Video / Piloting
           </p>

@@ -51,7 +51,7 @@ export function ContactApp() {
       <div className="wrap grid gap-14 lg:grid-cols-12 lg:items-center">
         <div className="lg:col-span-5">
           <p className="mono flex items-center gap-4 text-ink-3">
-            <span className="text-rec">06</span>
+            <span className="text-rec-ink">06</span>
             <span className="h-px w-10 bg-rule-2" />
             Contact Us
           </p>

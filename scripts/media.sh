@@ -1,26 +1,43 @@
 #!/usr/bin/env bash
 # Cuts web loops from the client's 1080p YouTube masters in assets-raw/youtube.
-# Swap in the 4K SharePoint originals later by pointing SRC at them.
+# Swap in the 4K SharePoint originals later by pointing the sources at them
+# (keep the crop= values in step with their letterboxing).
+#
+# Encoding is chosen for smooth playback everywhere, not just small files:
+#   - H.264 High profile, yuv420p: hardware-decoded on every browser/phone
+#   - -g 60 / keyint 2s, no scene-cut keyframes: seamless loops, cheap seeking
+#   - +faststart: moov atom first, playback starts while downloading
+#   - CRF 23–24 at "slow": visually clean without bloating
+#   - mobile hero is a PORTRAIT crop at full source height, so phones get a
+#     sharp picture instead of a 960px frame stretched to fill a tall screen
+#   - posters as WebP (smaller than JPEG, supported by every current browser)
 set -e
 cd "$(dirname "$0")/.."
 FF=node_modules/ffmpeg-static/ffmpeg.exe
 Y=assets-raw/youtube
 O=public/video
 REEL="$Y/2024 Website Main [bDZVGZLOdZA].mp4"
-enc="-c:v libx264 -preset slow -pix_fmt yuv420p -movflags +faststart -an"
+CROP="crop=1920:972:0:54"
+X264="-c:v libx264 -preset slow -profile:v high -pix_fmt yuv420p -g 60 -keyint_min 60 -sc_threshold 0 -movflags +faststart -an"
 
-# Hero montage: coast skim, stadium, boat, canola rip, lighthouse orbit.
+# ── Hero montage: coast skim, stadium, boat, canola rip, lighthouse orbit ──
 segs=( "0.5 7.5" "47.5 51.5" "52 56" "58.5 63.5" "66 71.5" )
 fc=""; n=0
-for s in "${segs[@]}"; do set -- $s; fc+="[0:v]trim=$1:$2,setpts=PTS-STARTPTS,crop=1920:972:0:54[v$n];"; n=$((n+1)); done
-fc+="$(for i in $(seq 0 $((n-1))); do printf "[v$i]"; done)concat=n=$n:v=1:a=0[c];[c]split[a][b];[a]scale=1920:-2[hd];[b]scale=960:-2[sd]"
-"$FF" -loglevel error -y -i "$REEL" -filter_complex "$fc" -map "[hd]" $enc -crf 28 -r 30 $O/hero-1080.mp4 -map "[sd]" $enc -crf 28 -r 30 $O/hero-540.mp4
-"$FF" -loglevel error -y -ss 2 -i "$REEL" -frames:v 1 -vf crop=1920:972:0:54,scale=1920:-2 -q:v 3 $O/hero-poster.jpg
+for s in "${segs[@]}"; do set -- $s; fc+="[0:v]trim=$1:$2,setpts=PTS-STARTPTS,$CROP[v$n];"; n=$((n+1)); done
+fc+="$(for i in $(seq 0 $((n-1))); do printf "[v$i]"; done)concat=n=$n:v=1:a=0,fps=30[c];[c]split[a][b];"
+# Desktop 1920×972; mobile = centred 9:16 portrait crop at full height (548×972).
+fc+="[a]scale=1920:-2[hd];[b]crop=548:972:(iw-548)/2:0[mob]"
+"$FF" -loglevel error -y -i "$REEL" -filter_complex "$fc" \
+  -map "[hd]" $X264 -crf 23 -level 4.1 -maxrate 7M -bufsize 14M $O/hero-1080.mp4 \
+  -map "[mob]" $X264 -crf 24 -level 3.1 -maxrate 2.2M -bufsize 4.4M $O/hero-mobile.mp4
+"$FF" -loglevel error -y -ss 2 -i "$REEL" -frames:v 1 -vf "$CROP" -c:v libwebp -quality 82 $O/hero-poster.webp
+"$FF" -loglevel error -y -ss 2 -i "$REEL" -frames:v 1 -vf "$CROP,crop=548:972:(iw-548)/2:0" -c:v libwebp -quality 82 $O/hero-poster-mobile.webp
 
+# ── Loops: 1280 wide (was 960 — tall reel tiles no longer upscale) ──
 clip() { # name src start dur [crop]
-  local C="${5:-crop=1920:972:0:54}"
-  "$FF" -loglevel error -y -ss "$3" -t "$4" -i "$2" -vf "$C,scale=960:-2,fps=30" $enc -crf 27 "$O/$1.mp4"
-  "$FF" -loglevel error -y -ss "$3" -i "$2" -frames:v 1 -vf "$C,scale=960:-2" -q:v 4 "$O/$1.jpg"
+  local C="${5:-$CROP}"
+  "$FF" -loglevel error -y -ss "$3" -t "$4" -i "$2" -vf "$C,scale=1280:-2,fps=30" $X264 -crf 24 -level 4.0 -maxrate 4M -bufsize 8M "$O/$1.mp4"
+  "$FF" -loglevel error -y -ss "$3" -i "$2" -frames:v 1 -vf "$C,scale=1280:-2" -c:v libwebp -quality 80 "$O/$1.webp"
 }
 # FPV reel tiles
 clip fpv-coast "$REEL" 0.5 6

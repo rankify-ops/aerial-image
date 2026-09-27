@@ -142,10 +142,10 @@ export function Hero() {
               loop
               playsInline
               preload="auto"
-              poster={asset("/video/hero-poster.jpg")}
+              poster={asset("/video/hero-poster.webp")}
               aria-label="Aerial Image FPV showreel"
             >
-              <source src={asset("/video/hero-540.mp4")} type="video/mp4" media="(max-width: 767px)" />
+              <source src={asset("/video/hero-mobile.mp4")} type="video/mp4" media="(max-width: 767px)" />
               <source src={asset("/video/hero-1080.mp4")} type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20" />

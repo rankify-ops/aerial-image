@@ -101,7 +101,7 @@ export function VideoWall() {
         <div className="absolute inset-0 flex items-center justify-center px-4">
           <div className="nglass w-full max-w-[560px] rounded-[32px] p-7 text-center sm:p-10">
             <p className="mono flex items-center justify-center gap-3 text-[10px] text-ink-3">
-              <span className="text-rec">01</span>
+              <span className="text-rec-ink">01</span>
               <span className="h-px w-8 bg-rule-2" />
               FPV Video / Piloting
             </p>

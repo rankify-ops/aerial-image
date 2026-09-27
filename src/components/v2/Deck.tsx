@@ -51,7 +51,7 @@ export function Deck() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="mono flex items-center gap-4 text-ink-3">
-              <span className="text-rec">03</span>
+              <span className="text-rec-ink">03</span>
               <span className="h-px w-10 bg-rule-2" />
               Services
             </p>

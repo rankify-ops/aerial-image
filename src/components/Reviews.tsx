@@ -15,7 +15,7 @@ const PENDING = "Awaiting client review";
 
 function Stars({ n = 5, ghost = false, className = "" }: { n?: number; ghost?: boolean; className?: string }) {
   return (
-    <span className={`flex gap-[3px] ${className}`} aria-label={ghost ? undefined : `${n} out of 5`} aria-hidden={ghost || undefined}>
+    <span className={`flex gap-[3px] ${className}`} role={ghost ? undefined : "img"} aria-label={ghost ? undefined : `${n} out of 5`} aria-hidden={ghost || undefined}>
       {Array.from({ length: 5 }, (_, i) => (
         <svg key={i} width="13" height="13" viewBox="0 0 12 12" aria-hidden>
           <path
@@ -225,7 +225,7 @@ export function ReviewWall() {
         <div>
           <Kicker index="“">Reviews</Kicker>
           <p className="h2 mt-6 text-ink">
-            Quality over Quantity<span className="text-rec">.</span>
+            Quality over Quantity<span className="text-rec-ink">.</span>
           </p>
         </div>
         {!reviews.length && <PendingTag />}

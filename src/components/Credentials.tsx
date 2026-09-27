@@ -56,7 +56,7 @@ export function Credentials() {
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {pillars.map((p, i) => (
             <Reveal as="li" key={p.title} delay={i * 90} className="flex flex-col rounded-[22px] border border-rule bg-white p-7">
-              <span className="mono text-rec">{String(i + 1).padStart(2, "0")}</span>
+              <span className="mono text-rec-ink">{String(i + 1).padStart(2, "0")}</span>
               <h3 className="mt-10 text-[24px] leading-tight tracking-[-0.03em]">{p.title}</h3>
               <p className="mt-4 text-[14.5px] leading-relaxed">{p.body}</p>
             </Reveal>

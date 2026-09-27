@@ -74,7 +74,7 @@ export function Ledger() {
       <div className="wrap grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <p className="mono flex items-center gap-4 text-ink-3">
-            <span className="text-rec">04</span>
+            <span className="text-rec-ink">04</span>
             <span className="h-px w-10 bg-rule-2" />
             Recent Projects
           </p>
@@ -132,7 +132,7 @@ export function Ledger() {
                   >
                     <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full shadow-[0_6px_14px_-6px_rgb(13_15_18/0.5)] sm:h-14 sm:w-14">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={asset(`/video/${p.slug}.jpg`)} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                      <img src={asset(`/video/${p.slug}.webp`)} alt="" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="serif block truncate text-[19px] leading-tight text-ink sm:text-[24px]">{p.title}</span>

@@ -80,13 +80,8 @@ export function ServiceTabs() {
         </div>
 
         {/* Panel */}
-        <ul
-          key={cat.key}
-          id={`svc-panel-${cat.key}`}
-          role="tabpanel"
-          aria-labelledby={`svc-tab-${cat.key}`}
-          className={`mt-10 grid gap-4 sm:grid-cols-2 ${cat.groups.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}
-        >
+        <div key={cat.key} id={`svc-panel-${cat.key}`} role="tabpanel" aria-labelledby={`svc-tab-${cat.key}`}>
+        <ul className={`mt-10 grid gap-4 sm:grid-cols-2 ${cat.groups.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
           {cat.groups.map((g, i) => (
             <li
               key={g.title}
@@ -125,6 +120,7 @@ export function ServiceTabs() {
             </li>
           ))}
         </ul>
+        </div>
       </div>
     </section>
   );
