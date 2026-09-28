@@ -107,6 +107,27 @@ export function Loop({ slug, className = "", hover = false }: { slug: string; cl
     const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
     if (reduce || saveData) return;
 
+    // Start buffering about a screen before the clip arrives, so it's already
+    // moving when it scrolls in instead of sitting on its poster.
+    // Not while the loader is up — the hero gets the whole connection first.
+    let wait = 0;
+    const warmNow = () => {
+      if (document.documentElement.classList.contains("preloading")) {
+        wait = window.setTimeout(warmNow, 500);
+        return;
+      }
+      v.preload = "auto";
+    };
+    const warm = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        warm.disconnect();
+        warmNow();
+      },
+      { rootMargin: "100% 0px 100% 0px" },
+    );
+    warm.observe(v);
+
     const hoverMode = hover && canHover;
     let visible = false;
     const io = new IntersectionObserver(
@@ -135,6 +156,8 @@ export function Loop({ slug, className = "", hover = false }: { slug: string; cl
       host.addEventListener("pointerleave", off);
     }
     return () => {
+      warm.disconnect();
+      clearTimeout(wait);
       io.disconnect();
       candidates.delete(v);
       v.pause();
@@ -172,34 +195,129 @@ export function pauseOffscreen(v: HTMLVideoElement | null) {
   return () => io.disconnect();
 }
 
-/**
- * Ref callback for the three hero videos. <source media> picks portrait vs
- * 1080p at load, but some browsers (older Chrome/Edge) ignore media on video
- * sources and take the first one, and a window that loads narrow then gets
- * maximised keeps the portrait file — either way a desktop shows a stretched,
- * pixelated crop. This checks what actually loaded, swaps it if wrong, and
- * swaps again when the window crosses the breakpoint. Also pauses offscreen.
+/*
+ * Hero video, chosen here rather than trusted to <source media> (some
+ * browsers ignore media= on video sources, and a window that loads narrow
+ * then gets maximised would keep the portrait file).
+ *
+ *   phones  → hero-mobile.mp4 (548×972 portrait, ~1.8 Mbps)
+ *   desktop → a small bitrate ladder, like a streaming player:
+ *             hero-1080 (~5.9 Mbps) · hero-720 (~2.5) · hero-540 (~1.2)
+ *
+ * While the loader is up (so any switch is invisible) the download rate is
+ * measured as seconds-of-video buffered per second of wall time, counted
+ * from the rung's first frame (so request latency doesn't count against it);
+ * a rung that can't stay comfortably ahead (< 1.3× real time) steps down,
+ * keeping the timestamp. Measuring stops the moment the loader commits to
+ * its exit (html.pre-done), so nothing switches during the reveal. After the reveal it only ever steps down, and only on a stall.
+ * Data Saver / 2g / 3g start on the lowest rungs outright.
  */
+const LADDER = ["hero-1080", "hero-720", "hero-540"] as const;
+const MBPS = [5.9, 2.5, 1.2]; // average bitrate of each rung (scripts/media.sh)
+const SAFE_RATE = 1.3;
+let rung = -1; // shared by all hero mounts; -1 = not decided yet
+type Conn = { saveData?: boolean; downlink?: number; effectiveType?: string };
+function startRung() {
+  const c = (navigator as Navigator & { connection?: Conn }).connection;
+  if (!c) return 0;
+  if (c.saveData || /2g/.test(c.effectiveType ?? "")) return 2;
+  if (c.effectiveType === "3g" || (!!c.downlink && c.downlink < 5)) return 1;
+  return 0;
+}
+export function aheadOf(v: HTMLVideoElement, t: number) {
+  for (let i = 0; i < v.buffered.length; i++) {
+    if (v.buffered.start(i) <= t + 0.1 && v.buffered.end(i) > t) return v.buffered.end(i);
+  }
+  return t;
+}
+
+/** Ref callback for the three hero videos — picks the file (above) and pauses offscreen. */
 export function heroVideo(v: HTMLVideoElement | null) {
   if (!v) return;
+  if (rung < 0) rung = startRung();
   const mq = window.matchMedia("(max-width: 767px)");
+  const file = () => (mq.matches ? "hero-mobile" : LADDER[rung]);
+  const on = (name: string) => !!v.currentSrc && new URL(v.currentSrc).pathname.endsWith(`/${name}.mp4`);
+
+  // Measurement window for the current file: opens at its first frame.
+  let since = 0;
+  let fromT = 0;
+  const open = () => {
+    if (since) return;
+    since = performance.now();
+    fromT = aheadOf(v, v.currentTime);
+  };
+
   const pick = () => {
     if (!v.currentSrc) return; // selection hasn't run yet — loadstart calls again
-    const want = asset(mq.matches ? "/video/hero-mobile.mp4" : "/video/hero-1080.mp4");
-    if (new URL(v.currentSrc).pathname === new URL(want, location.href).pathname) return;
-    const wasPlaying = !v.paused || v.autoplay;
-    v.src = want;
-    if (wasPlaying) v.play().catch(() => {});
+    const want = file();
+    if (on(want)) return;
+    const t = v.currentTime;
+    v.src = asset(`/video/${want}.mp4`);
+    if (t > 0.1) v.addEventListener("loadedmetadata", () => (v.currentTime = t), { once: true });
+    v.play().catch(() => {});
+    since = 0;
   };
+  const stepDown = (to = rung + 1) => {
+    if (mq.matches || rung >= LADDER.length - 1) return;
+    rung = Math.min(LADDER.length - 1, Math.max(rung + 1, to));
+    pick();
+  };
+  // Best rung for a measured connection speed (Mbps): jump straight there
+  // rather than stepping down one rung at a time (each switch costs a restart).
+  const fits = (mbps: number) => {
+    const i = MBPS.findIndex((b) => b * SAFE_RATE <= mbps);
+    return i < 0 ? LADDER.length - 1 : i;
+  };
+  let loadAt = performance.now();
+  v.addEventListener("loadstart", () => (loadAt = performance.now()));
+
+  // Measure while the loader is up.
+  const probe = window.setInterval(() => {
+    const h = document.documentElement.classList;
+    if (!h.contains("preloading") || h.contains("pre-done") || mq.matches) return window.clearInterval(probe);
+    // No first frame 2.5s after asking for it → at least one rung down.
+    if (!since) {
+      if (performance.now() - loadAt > 2500) stepDown();
+      return;
+    }
+    const secs = (performance.now() - since) / 1000;
+    if (secs < 1.5) return;
+    const end = aheadOf(v, v.currentTime);
+    const whole = Number.isFinite(v.duration) && end >= v.duration - 0.25;
+    // Plenty in hand already (well past the loader's needs) → keep this rung.
+    if (whole || end - v.currentTime >= 8) return;
+    const rate = (end - fromT) / secs; // seconds of video per second
+    if (rate < SAFE_RATE) stepDown(fits(rate * MBPS[rung]));
+  }, 500);
+  // After the reveal: a real mid-play stall (still stuck after 0.7s — not a
+  // momentary blip) steps down.
+  let stall = 0;
+  const waiting = () => {
+    if (v.currentTime < 0.3 || !document.documentElement.classList.contains("pre-done")) return;
+    clearTimeout(stall);
+    stall = window.setTimeout(() => v.readyState < 3 && !v.paused && stepDown(), 700);
+  };
+  const resumed = () => clearTimeout(stall);
+
   // The browser may have picked a file before this runs, so check now and at
   // every stage it could report one.
   const EVENTS = ["loadstart", "loadedmetadata", "playing"] as const;
   pick();
   EVENTS.forEach((e) => v.addEventListener(e, pick));
+  v.addEventListener("loadeddata", open);
+  if (v.readyState >= 2) open();
+  v.addEventListener("waiting", waiting);
+  v.addEventListener("playing", resumed);
   mq.addEventListener("change", pick);
   const stop = pauseOffscreen(v);
   return () => {
+    window.clearInterval(probe);
+    clearTimeout(stall);
+    v.removeEventListener("playing", resumed);
     EVENTS.forEach((e) => v.removeEventListener(e, pick));
+    v.removeEventListener("loadeddata", open);
+    v.removeEventListener("waiting", waiting);
     mq.removeEventListener("change", pick);
     stop?.();
   };
