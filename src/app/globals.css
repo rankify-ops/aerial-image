@@ -169,6 +169,9 @@
   }
   .btn-glass::before { background: #fff; }
   .btn-glass:hover { color: var(--ink); }
+  .btn-white { color: var(--ink); background: #fff; border-color: var(--rule); }
+  .btn-white::before { background: var(--ink); }
+  .btn-white:hover { color: var(--paper); border-color: var(--ink); }
   .btn .arrow { transition: transform 0.4s var(--ease); }
   .btn:hover .arrow { transform: translate(2px, -2px); }
 

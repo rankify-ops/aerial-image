@@ -87,139 +87,149 @@ export function HeroAlt() {
   }, []);
 
   return (
-    <section ref={root} id="top" className="relative h-[100svh] min-h-[720px] p-2.5 sm:p-3.5" style={{ "--s": 0 } as React.CSSProperties}>
-      <div className="relative h-full overflow-hidden rounded-[22px] bg-ink sm:rounded-[30px]">
-        <video
-          ref={pauseOffscreen}
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ transform: "scale(calc(1.02 + var(--s) * 0.14))" }}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster={asset("/video/hero-poster.webp")}
-          aria-label="Aerial Image FPV showreel"
-        >
-          <source src={asset("/video/hero-mobile.mp4")} type="video/mp4" media="(max-width: 767px)" />
-          <source src={asset("/video/hero-1080.mp4")} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/5 to-black/40" />
+    <>
+      <section ref={root} id="top" className="relative h-[100svh] min-h-[560px] p-2.5 sm:min-h-[720px] sm:p-3.5" style={{ "--s": 0 } as React.CSSProperties}>
+        <div className="relative h-full overflow-hidden rounded-[22px] bg-ink sm:rounded-[30px]">
+          <video
+            ref={pauseOffscreen}
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ transform: "scale(calc(1.02 + var(--s) * 0.14))" }}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={asset("/video/hero-poster.webp")}
+            aria-label="Aerial Image FPV showreel"
+          >
+            <source src={asset("/video/hero-mobile.mp4")} type="video/mp4" media="(max-width: 767px)" />
+            <source src={asset("/video/hero-1080.mp4")} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/5 to-black/40" />
 
-        {/* ── OSD ─────────────────────────────────────────── */}
-        <div className="osd" aria-hidden>
-          <i className="corner c1" />
-          <i className="corner c2" />
-          <i className="corner c3" />
-          <i className="corner c4" />
+          {/* ── OSD ─────────────────────────────────────────── */}
+          <div className="osd" aria-hidden>
+            <i className="corner c1" />
+            <i className="corner c2" />
+            <i className="corner c3" />
+            <i className="corner c4" />
 
-          {/* Top row, clear of the header pill */}
-          <div className="mono absolute inset-x-8 top-[104px] flex items-center justify-between text-[10.5px] sm:inset-x-12 sm:top-[112px]">
-            <span className="flex items-center gap-3">
-              <span className="rec-dot blink" /> REC <span ref={tc} className="tabular-nums">00:00:00:00</span>
-            </span>
-            {/* Heading tape */}
-            <span className="relative hidden h-7 w-[280px] overflow-hidden lg:block" style={{ maskImage: "linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent)", WebkitMaskImage: "linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent)" }}>
-              <span ref={hdgTape} className="absolute inset-y-0 -left-6 flex items-end">
-                {Array.from({ length: 16 }, (_, i) => (
-                  <i key={i} className={`mr-[23px] block w-px bg-white/80 ${i % 3 ? "h-1.5" : "h-3"}`} />
-                ))}
+            {/* Top row, clear of the header pill */}
+            <div className="mono absolute inset-x-8 top-[104px] flex items-center justify-between text-[10.5px] sm:inset-x-12 sm:top-[112px]">
+              <span className="flex items-center gap-3">
+                <span className="rec-dot blink" /> REC <span ref={tc} className="tabular-nums">00:00:00:00</span>
               </span>
-              <span className="absolute left-1/2 top-0 -translate-x-1/2 tabular-nums">
-                HDG <span ref={hdg}>312</span>°
-              </span>
-            </span>
-            <span className="flex items-center gap-5">
-              <span className="hidden sm:inline">FPV · CH 01</span>
-              <span className="flex items-center gap-2">
-                <svg width="22" height="10" viewBox="0 0 22 10" fill="none">
-                  <rect x="0.5" y="0.5" width="19" height="9" rx="1.5" stroke="currentColor" />
-                  <rect x="2.5" y="2.5" width="12" height="5" fill="currentColor" />
-                  <rect x="20" y="3" width="1.6" height="4" fill="currentColor" />
-                </svg>
-                16.4V
-              </span>
-            </span>
-          </div>
-
-          {/* Side ladders + readouts */}
-          <Ladder tape={altTape} side="l" />
-          <Ladder tape={spdTape} side="r" />
-          <span className="mono absolute left-[70px] hidden -translate-y-1/2 text-[11px] tabular-nums md:block lg:left-[84px]" style={{ top: "36%" }}>
-            <span className="block text-[9px] text-white/60">ALT</span>
-            <span ref={alt}>018</span>
-            <span className="text-white/60">M</span>
-          </span>
-          <span className="mono absolute right-[70px] hidden -translate-y-1/2 text-right text-[11px] tabular-nums md:block lg:right-[84px]" style={{ top: "36%" }}>
-            <span className="block text-[9px] text-white/60">SPD</span>
-            <span ref={spd}>062</span>
-            <span className="text-white/60">KM/H</span>
-          </span>
-
-          {/* Centre reticle */}
-          <svg width="46" height="46" viewBox="0 0 40 40" fill="none" className="absolute left-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block" style={{ top: "36%" }}>
-            <circle cx="20" cy="20" r="3" stroke="white" strokeWidth="1.2" />
-            <path d="M20 4v8M20 28v8M4 20h8M28 20h8" stroke="white" strokeWidth="1.2" />
-          </svg>
-
-          {/* Bottom-right: licences */}
-          <div className="mono absolute bottom-8 right-8 hidden items-center gap-2 text-[9.5px] sm:bottom-10 sm:right-12 md:flex lg:hidden">
-            CASA
-            {licences.map((l) => (
-              <span key={l} className="rounded-full border border-white/40 px-2 py-1">
-                {l}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Content: free headline left, frosted-glass button panel right ── */}
-        <div className="absolute inset-0 flex flex-col justify-end gap-6 p-4 pb-5 sm:p-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:p-12 lg:pb-14">
-          {/* Free text over the footage — no card */}
-          <div className="alt-text max-w-[760px] text-white" style={{ transform: "translateY(calc(var(--s) * -60px))" }}>
-            <p className="fade-up mono flex items-center gap-2 whitespace-nowrap text-[8.5px] tracking-[0.08em] sm:gap-2.5 sm:text-[10.5px] sm:tracking-[0.14em]">
-              <span className="rec-dot blink" />
-              {site.tagline.join(" • ")}
-            </p>
-            <h1 className="mt-5 text-[clamp(52px,7.4vw,128px)] leading-[0.86] tracking-[-0.055em] text-white sm:mt-7">
-              <span className="rise">
-                <span style={{ animationDelay: "0.1s" }}>
-                  {/* Solid grey — the old white/55 look without the footage showing through. */}
-                  <span style={{ color: "#c3c7cd" }}>A whole</span> new
+              {/* Heading tape */}
+              <span className="relative hidden h-7 w-[280px] overflow-hidden lg:block" style={{ maskImage: "linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent)", WebkitMaskImage: "linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent)" }}>
+                <span ref={hdgTape} className="absolute inset-y-0 -left-6 flex items-end">
+                  {Array.from({ length: 16 }, (_, i) => (
+                    <i key={i} className={`mr-[23px] block w-px bg-white/80 ${i % 3 ? "h-1.5" : "h-3"}`} />
+                  ))}
+                </span>
+                <span className="absolute left-1/2 top-0 -translate-x-1/2 tabular-nums">
+                  HDG <span ref={hdg}>312</span>°
                 </span>
               </span>
-              <span className="rise">
-                <span style={{ animationDelay: "0.22s" }}>perspective.</span>
+              <span className="flex items-center gap-5">
+                <span className="hidden sm:inline">FPV · CH 01</span>
+                <span className="flex items-center gap-2">
+                  <svg width="22" height="10" viewBox="0 0 22 10" fill="none">
+                    <rect x="0.5" y="0.5" width="19" height="9" rx="1.5" stroke="currentColor" />
+                    <rect x="2.5" y="2.5" width="12" height="5" fill="currentColor" />
+                    <rect x="20" y="3" width="1.6" height="4" fill="currentColor" />
+                  </svg>
+                  16.4V
+                </span>
               </span>
-            </h1>
-            <p className="fade-up mt-6 max-w-[500px] text-[16px] leading-relaxed sm:text-[17px]" style={{ animationDelay: "0.4s", color: "#dfe2e6" }}>
-              Aerial Image specialise in <span className="text-white">FPV (First-Person-View) cinematic capture and piloting services.</span>
-            </p>
+            </div>
+
+            {/* Side ladders + readouts */}
+            <Ladder tape={altTape} side="l" />
+            <Ladder tape={spdTape} side="r" />
+            <span className="mono absolute left-[70px] hidden -translate-y-1/2 text-[11px] tabular-nums md:block lg:left-[84px]" style={{ top: "36%" }}>
+              <span className="block text-[9px] text-white/60">ALT</span>
+              <span ref={alt}>018</span>
+              <span className="text-white/60">M</span>
+            </span>
+            <span className="mono absolute right-[70px] hidden -translate-y-1/2 text-right text-[11px] tabular-nums md:block lg:right-[84px]" style={{ top: "36%" }}>
+              <span className="block text-[9px] text-white/60">SPD</span>
+              <span ref={spd}>062</span>
+              <span className="text-white/60">KM/H</span>
+            </span>
+
+            {/* Centre reticle */}
+            <svg width="46" height="46" viewBox="0 0 40 40" fill="none" className="absolute left-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block" style={{ top: "36%" }}>
+              <circle cx="20" cy="20" r="3" stroke="white" strokeWidth="1.2" />
+              <path d="M20 4v8M20 28v8M4 20h8M28 20h8" stroke="white" strokeWidth="1.2" />
+            </svg>
+
+            {/* Bottom-right: licences */}
+            <div className="mono absolute bottom-8 right-8 hidden items-center gap-2 text-[9.5px] sm:bottom-10 sm:right-12 md:flex lg:hidden">
+              CASA
+              {licences.map((l) => (
+                <span key={l} className="rounded-full border border-white/40 px-2 py-1">
+                  {l}
+                </span>
+              ))}
+            </div>
           </div>
 
-          {/* Frosted-glass panel, like a quote form: showreel + the 8 service buttons */}
-          <div className="glass w-full shrink-0 rounded-[26px] p-3 sm:rounded-[30px] sm:p-4 lg:w-[520px]" style={{ transform: "translateY(calc(var(--s) * -110px))" }}>
-            <div className="flex items-center justify-between gap-3 px-2 pb-3 pt-1 sm:px-3">
-              <p className="mono flex items-center gap-2 text-[10px] text-ink">
-                <span className="rec-dot" /> Services
+          {/* ── Content: free headline left, frosted-glass button panel right ── */}
+          <div className="absolute inset-0 flex flex-col justify-end gap-6 p-4 pb-5 sm:p-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10 lg:p-12 lg:pb-14">
+            {/* Free text over the footage — no card */}
+            <div className="alt-text max-w-[760px] text-white" style={{ transform: "translateY(calc(var(--s) * -60px))" }}>
+              <p className="fade-up mono flex items-center gap-2 whitespace-nowrap text-[8.5px] tracking-[0.08em] sm:gap-2.5 sm:text-[10.5px] sm:tracking-[0.14em]">
+                <span className="rec-dot blink" />
+                {site.tagline.join(" • ")}
               </p>
-              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="mono flex items-center gap-2 rounded-full bg-ink px-3.5 py-2 text-[9.5px] text-paper transition-transform hover:scale-[1.03]">
-                <Play size={9} /> Watch Showreel
-              </button>
+              <h1 className="mt-5 text-[clamp(52px,7.4vw,128px)] leading-[0.86] tracking-[-0.055em] text-white sm:mt-7">
+                <span className="rise">
+                  <span style={{ animationDelay: "0.1s" }}>
+                    {/* Solid grey — the old white/55 look without the footage showing through. */}
+                    <span style={{ color: "#c3c7cd" }}>A whole</span> new
+                  </span>
+                </span>
+                <span className="rise">
+                  <span style={{ animationDelay: "0.22s" }}>perspective.</span>
+                </span>
+              </h1>
+              <p className="fade-up mt-6 max-w-[500px] text-[16px] leading-relaxed sm:text-[17px]" style={{ animationDelay: "0.4s", color: "#dfe2e6" }}>
+                Aerial Image specialise in <span className="text-white">FPV (First-Person-View) cinematic capture and piloting services.</span>
+              </p>
             </div>
-            {/* Desktop: all eight buttons */}
-            <div className="hidden lg:block">
-              <HeroServices />
-            </div>
-            {/* Phones/tablets: just the two CTAs */}
-            <div className="grid gap-2 lg:hidden">
+
+            {/* Frosted-glass panel, like a quote form: showreel + the 8 service buttons */}
+            {/* Phones/tablets: two full-width buttons over the footage, no panel. */}
+            <div className="grid gap-2.5 lg:hidden">
               <a href="#contact" className="btn btn-primary w-full">
                 Work with us <Arrow />
               </a>
+              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-white w-full">
+                <Play size={11} /> Watch Showreel
+              </button>
+            </div>
+
+            <div className="glass hidden w-full shrink-0 rounded-[26px] p-3 sm:rounded-[30px] sm:p-4 lg:block lg:w-[520px]" style={{ transform: "translateY(calc(var(--s) * -110px))" }}>
+              <div className="flex items-center justify-between gap-3 px-2 pb-3 pt-1 sm:px-3">
+                <p className="mono flex items-center gap-2 text-[10px] text-ink">
+                  <span className="rec-dot" /> Services
+                </p>
+                <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="mono flex items-center gap-2 rounded-full bg-ink px-3.5 py-2 text-[9.5px] text-paper transition-transform hover:scale-[1.03]">
+                  <Play size={9} /> Watch Showreel
+                </button>
+              </div>
+              <HeroServices />
             </div>
           </div>
         </div>
+      </section>
+      {/* Phones/tablets: the service tiles sit under the hero on plain paper. */}
+      <div className="wrap pb-4 pt-10 lg:hidden">
+        <p className="mono mb-4 flex items-center gap-2 text-[10px] text-ink-3">
+          <span className="rec-dot" /> Services
+        </p>
+        <HeroServices />
       </div>
-    </section>
+    </>
   );
 }

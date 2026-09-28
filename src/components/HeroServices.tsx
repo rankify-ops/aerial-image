@@ -80,15 +80,15 @@ export function HeroServices() {
           key={x.title}
           type="button"
           onClick={() => go(x.t, x.a)}
-          className="group flex min-h-[76px] items-center gap-3 rounded-[16px] border border-rule bg-white/70 p-3 text-left transition-[border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ink hover:bg-white"
+          className="group flex min-h-[76px] items-center gap-2.5 rounded-[16px] border border-rule bg-white/70 p-3 text-left sm:gap-3 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-ink hover:bg-white"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-rule bg-paper text-ink transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
+          <span className="flex h-9 w-9 shrink-0 items-center sm:h-10 sm:w-10 justify-center rounded-full border border-rule bg-paper text-ink transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               {ICONS[x.title]}
             </svg>
           </span>
           <span className="min-w-0">
-            <span className="block text-[14px] leading-snug tracking-[-0.015em] text-ink">{x.title}</span>
+            <span className="block text-[13.5px] leading-snug sm:text-[14px] tracking-[-0.015em] text-ink">{x.title}</span>
             <span className="mono mt-1 block text-[9.5px] text-ink-3">
               {String(i + 1).padStart(2, "0")} · {x.cat}
             </span>

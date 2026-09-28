@@ -114,7 +114,7 @@ export function Hero() {
               <a href="#contact" className="btn btn-primary w-full sm:w-auto">
                 Work with us <Arrow />
               </a>
-              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-ghost w-full sm:w-auto">
+              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-white w-full sm:w-auto">
                 <Play size={11} /> Watch Showreel
               </button>
             </div>
@@ -230,6 +230,13 @@ export function Hero() {
             </button>
           </div>
         </div>
+      </div>
+      {/* Phones/tablets: the service tiles sit under the hero on plain paper. */}
+      <div className="wrap pb-4 pt-10 lg:hidden">
+        <p className="mono mb-4 flex items-center gap-2 text-[10px] text-ink-3">
+          <span className="rec-dot" /> Services
+        </p>
+        <HeroServices />
       </div>
     </section>
   );
