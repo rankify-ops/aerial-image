@@ -231,9 +231,13 @@ export function heroVideo(v: HTMLVideoElement | null) {
   EVENTS.forEach((e) => v.addEventListener(e, pick));
   mq.addEventListener("change", pick);
   const stop = pauseOffscreen(v);
+  // Glass over the footage drops its live blur while the hero is on screen (globals.css).
+  const live = new IntersectionObserver(([e]) => document.documentElement.classList.toggle("hero-live", e.isIntersecting));
+  live.observe(v);
   return () => {
     EVENTS.forEach((e) => v.removeEventListener(e, pick));
     mq.removeEventListener("change", pick);
+    live.disconnect();
     stop?.();
   };
 }

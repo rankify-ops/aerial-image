@@ -79,7 +79,7 @@ export function Header() {
         <div
           aria-hidden
           onClick={() => hide()}
-          className={`fixed inset-0 -z-10 hidden bg-ink/10 backdrop-blur-[3px] transition-opacity duration-500 lg:block ${menu ? "opacity-100" : "pointer-events-none opacity-0"}`}
+          className={`fixed inset-0 -z-10 hidden bg-ink/10 transition-opacity duration-500 lg:block ${menu ? "opacity-100 backdrop-blur-[3px]" : "pointer-events-none opacity-0"}`}
         />
       )}
 
