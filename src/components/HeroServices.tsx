@@ -67,7 +67,7 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 export function HeroServices() {
-  const tiles = services.flatMap((s, t) => s.groups.map((g, a) => ({ title: g.title, cat: s.name, t, a })));
+  const tiles = services.flatMap((s, t) => s.groups.map((g, a) => ({ title: g.title, t, a })));
   const go = (t: number, a: number) => {
     openService(t, a);
     document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
@@ -75,7 +75,7 @@ export function HeroServices() {
 
   return (
     <nav aria-label="Services" className="fade-up grid grid-cols-2 gap-2.5" style={{ animationDelay: "0.72s" }}>
-      {tiles.map((x, i) => (
+      {tiles.map((x) => (
         <button
           key={x.title}
           type="button"
@@ -89,9 +89,6 @@ export function HeroServices() {
           </span>
           <span className="min-w-0">
             <span className="block text-[13.5px] leading-snug sm:text-[14px] tracking-[-0.015em] text-ink">{x.title}</span>
-            <span className="mono mt-1 block text-[9.5px] text-ink-3">
-              {String(i + 1).padStart(2, "0")} · {x.cat}
-            </span>
           </span>
         </button>
       ))}
