@@ -283,6 +283,9 @@ export function heroVideo(v: HTMLVideoElement | null) {
     }
     const secs = (performance.now() - since) / 1000;
     if (secs < 1.5) return;
+    // Some engines (seen in WebKit) report an empty buffered list while
+    // playing fine — no measurement possible, so leave the rung alone.
+    if (v.buffered.length === 0) return;
     const end = aheadOf(v, v.currentTime);
     const whole = Number.isFinite(v.duration) && end >= v.duration - 0.25;
     // Plenty in hand already (well past the loader's needs) → keep this rung.

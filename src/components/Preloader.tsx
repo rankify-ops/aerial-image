@@ -45,6 +45,9 @@ export function Preloader() {
       const v = video();
       if (!v || blocked) return true;
       if (v.paused || v.readyState < 3) return false;
+      // Engine not reporting buffered ranges (seen in WebKit): fall back to
+      // "has enough data and is actually advancing".
+      if (v.buffered.length === 0) return v.readyState >= 4 && v.currentTime > 0.5;
       const end = aheadOf(v, v.currentTime);
       return end - v.currentTime >= 2.5 || (Number.isFinite(v.duration) && end >= v.duration - 0.25);
     };
