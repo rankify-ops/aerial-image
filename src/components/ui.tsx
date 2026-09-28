@@ -288,8 +288,10 @@ export function heroVideo(v: HTMLVideoElement | null) {
     if (v.buffered.length === 0) return;
     const end = aheadOf(v, v.currentTime);
     const whole = Number.isFinite(v.duration) && end >= v.duration - 0.25;
-    // Plenty in hand already (well past the loader's needs) → keep this rung.
-    if (whole || end - v.currentTime >= 8) return;
+    // 4s+ already in hand → this rung is keeping up. (Browsers also pause
+    // their own download once they've buffered enough, which would otherwise
+    // read as a slow connection and throw away quality for nothing.)
+    if (whole || end - v.currentTime >= 4) return;
     const rate = (end - fromT) / secs; // seconds of video per second
     if (rate < SAFE_RATE) stepDown(fits(rate * MBPS[rung]));
   }, 500);
