@@ -88,8 +88,9 @@ export function Hero2() {
           poster={asset("/video/hero-poster.webp")}
           aria-label="Aerial Image FPV showreel"
         >
-          <source src={asset("/video/hero-mobile.mp4")} type="video/mp4" media="(max-width: 767px)" />
-          <source src={asset("/video/hero-1080.mp4")} type="video/mp4" />
+          {/* Desktop first: a browser that ignores media= takes the first source. heroVideo() corrects phones. */}
+          <source src={asset("/video/hero-1080.mp4")} type="video/mp4" media="(min-width: 768px)" />
+          <source src={asset("/video/hero-mobile.mp4")} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/35" />
 

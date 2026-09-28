@@ -26,6 +26,7 @@ export function Preloader() {
     document.documentElement.classList.add("preloading");
     let raf = 0;
     let done = false;
+    let last = t0;
 
     const video = () => document.querySelector<HTMLVideoElement>("#top video");
     const target = () => {
@@ -40,13 +41,18 @@ export function Preloader() {
       return Math.min(1, ahead / dur);
     };
 
+    // Time-based, not per-frame: a busy machine dropping frames (decoding
+    // 1080p while hydrating) must not slow the counter down.
     const tick = (now: number) => {
       const elapsed = now - t0;
+      const dt = Math.min(0.25, (now - last) / 1000);
+      last = now;
       const real = target();
       const floor = Math.min(0.9, elapsed / MAX_MS);
       const goal = elapsed >= MAX_MS ? 1 : Math.max(real, floor);
-      shown.current += Math.min(0.03, (goal - shown.current) * 0.1);
+      shown.current += Math.min(dt * 1.8, (goal - shown.current) * (1 - Math.exp(-dt / 0.16)));
       if (goal >= 1 && shown.current > 0.985) shown.current = 1;
+      if (elapsed >= MAX_MS + 400) shown.current = 1;
       setP(shown.current);
 
       if (!done && shown.current >= 1 && elapsed >= MIN_MS) {
