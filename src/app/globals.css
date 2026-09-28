@@ -681,6 +681,15 @@ button:not(:disabled), [role="button"], [role="tab"], [role="switch"], label[for
   .svc-twist-count { color: var(--ink-3); transition: color 0.45s var(--ease) 0.12s; }
   .svc-twist-tab.is-on .svc-twist-count { color: rgb(243 243 239 / 0.7); }
 
+  /* Selected-name underline: REC red reads on both the ink pour and paper.
+     Moving right, the right edge leads and the left edge follows (and
+     mirrored going left), so it stretches then snaps like a dash. */
+  .svc-uline { position: absolute; z-index: 1; height: 3px; border-radius: 3px; background: var(--rec); pointer-events: none; }
+  .svc-uline[data-ready="1"] { transition: left 0.5s var(--ease), right 0.5s var(--ease), top 0.3s var(--ease); }
+  .svc-uline[data-ready="1"][data-dir="r"] { transition: right 0.42s cubic-bezier(0.7, 0, 0.2, 1), left 0.62s cubic-bezier(0.7, 0, 0.2, 1) 0.1s, top 0.3s var(--ease); }
+  .svc-uline[data-ready="1"][data-dir="l"] { transition: left 0.42s cubic-bezier(0.7, 0, 0.2, 1), right 0.62s cubic-bezier(0.7, 0, 0.2, 1) 0.1s, top 0.3s var(--ease); }
+  @media (prefers-reduced-motion: reduce) { .svc-uline { transition: none !important; } }
+
 }
 
 /* ALT hero: free text over footage. */

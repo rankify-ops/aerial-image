@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { services } from "@/content/site";
 import { Arrow, Kicker, Loop, Photo } from "./ui";
 // Pour v1 (Tom's pick). The droplet version is LiquidDrops.tsx — swap the import + tag to try it again.
@@ -22,6 +22,34 @@ export function ServiceTabs() {
   const [tab, setTab] = useState(0);
   const [hi, setHi] = useState<number | null>(null);
   const cat = services[tab];
+
+  // Underline under the selected name. It dashes across: the leading edge
+  // shoots ahead, the trailing edge catches up (see .svc-uline).
+  const names = useRef<(HTMLSpanElement | null)[]>([]);
+  const uline = useRef<HTMLSpanElement>(null);
+  const prevTab = useRef(tab);
+  useEffect(() => {
+    const b = uline.current;
+    const box = b?.parentElement;
+    if (!b || !box) return;
+    const place = () => {
+      const n = names.current[tab];
+      if (!n) return;
+      const B = box.getBoundingClientRect();
+      const r = n.getBoundingClientRect();
+      b.style.left = `${r.left - B.left}px`;
+      b.style.right = `${B.right - r.right}px`;
+      b.style.top = `${r.bottom - B.top + 8}px`;
+    };
+    b.dataset.dir = tab > prevTab.current ? "r" : tab < prevTab.current ? "l" : "";
+    prevTab.current = tab;
+    place();
+    // First placement snaps into position; only later moves animate.
+    requestAnimationFrame(() => (b.dataset.ready = "1"));
+    const ro = new ResizeObserver(place);
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, [tab]);
 
   useEffect(() => {
     const on = (e: Event) => {
@@ -56,6 +84,7 @@ export function ServiceTabs() {
         */}
         <div role="tablist" aria-label="Service type" data-on={tab} className="svc-twist mt-14">
           <LiquidInk on={tab} />
+          <span ref={uline} aria-hidden className="svc-uline" />
           {services.map((s, i) => {
             const on = tab === i;
             return (
@@ -69,7 +98,7 @@ export function ServiceTabs() {
                 onMouseEnter={() => window.matchMedia("(hover: hover)").matches && setTab(i)}
                 className={`svc-twist-tab ${i === 1 ? "is-right" : ""} ${on ? "is-on" : ""}`}
               >
-                <span className="text-[24px] leading-none tracking-[-0.04em] sm:text-[clamp(30px,3.6vw,56px)]">{s.name}</span>
+                <span ref={(el) => { names.current[i] = el; }} className="text-[24px] leading-none tracking-[-0.04em] sm:text-[clamp(30px,3.6vw,56px)]">{s.name}</span>
                 <span className="svc-twist-count mono hidden items-center gap-2 whitespace-nowrap text-[10.5px] sm:flex">
                   {on && <span className="rec-dot" />}
                   {String(s.groups.length).padStart(2, "0")} services
