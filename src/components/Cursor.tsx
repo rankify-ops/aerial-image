@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 /*
  * Custom cursor (desktop, fine pointer only): a dot that tracks the pointer
@@ -11,6 +12,7 @@ import { useEffect, useRef } from "react";
  *            reading "Play"
  *   text   — inputs / textareas: collapses to a thin caret-like bar
  * Native cursor is hidden via html.has-cursor; touch devices never get it.
+ * /alt2 opts out: plain system arrow + pointer hand (see globals.css).
  */
 type Mode = "default" | "link" | "play" | "text";
 
@@ -18,8 +20,10 @@ export function Cursor() {
   const dot = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
   const root = useRef<HTMLDivElement>(null);
+  const native = usePathname().startsWith("/alt2");
 
   useEffect(() => {
+    if (native) return;
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const html = document.documentElement;
     html.classList.add("has-cursor");
@@ -90,7 +94,7 @@ export function Cursor() {
       window.removeEventListener("pointerup", up);
       document.removeEventListener("pointerleave", leave);
     };
-  }, []);
+  }, [native]);
 
   return (
     <div ref={root} className="cursor" data-mode="default" data-hidden="1" aria-hidden>

@@ -576,6 +576,10 @@
   @media (prefers-reduced-motion: reduce) { .sq-a, .sq-b { animation: none; } .sq-b { transform: rotate(45deg); } }
 }
 
+/* Native cursor (used where the custom one is off, e.g. /alt2): the hand on
+   everything clickable — Tailwind's preflight resets buttons to the arrow. */
+button:not(:disabled), [role="button"], [role="tab"], [role="switch"], label[for], summary, select, .tile { cursor: pointer; }
+
 /* ── Custom cursor (desktop, fine pointer) ─────────────────────────────── */
 @layer components {
   html.has-cursor,
@@ -685,5 +689,5 @@
 
 /* Browsers without small-viewport units (pre-2022 Safari/Chrome) fall back to vh. */
 @supports not (height: 100svh) {
-  .h-[100svh] { height: 100vh; }
+  .h-\[100svh\] { height: 100vh; }
 }
