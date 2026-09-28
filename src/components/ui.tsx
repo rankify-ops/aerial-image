@@ -174,8 +174,8 @@ export function pauseOffscreen(v: HTMLVideoElement | null) {
 
 export function Arrow({ className = "" }: { className?: string }) {
   return (
-    <svg width="14" height="10" viewBox="0 0 14 10" fill="none" className={`arrow ${className}`} aria-hidden>
-      <path d="M0 5h12.5M9 1l4 4-4 4" stroke="currentColor" strokeWidth="1.2" />
+    <svg width="11" height="11" viewBox="0 0 12 12" fill="none" className={`arrow ${className}`} aria-hidden>
+      <path d="M1.5 10.5l9-9M3 1.5h7.5V9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="square" />
     </svg>
   );
 }

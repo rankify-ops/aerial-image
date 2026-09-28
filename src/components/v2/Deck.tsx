@@ -175,13 +175,13 @@ export function Deck() {
             {/* Bottom bar, like the reference's Add Card / Order a Card row */}
             <div className="nglass mt-8 flex items-center gap-2 rounded-full p-1.5">
               <button type="button" onClick={() => go(-1)} aria-label="Previous service" className="norb flex h-11 w-11 shrink-0 items-center justify-center text-ink">
-                <Arrow className="rotate-180" />
+                <Arrow className="-rotate-135" />
               </button>
               <a href="#contact" className="btn btn-primary h-11 flex-1 px-4">
                 Work with us <Arrow />
               </a>
               <button type="button" onClick={() => go(1)} aria-label="Next service" className="norb flex h-11 w-11 shrink-0 items-center justify-center text-ink">
-                <Arrow />
+                <Arrow className="rotate-45" />
               </button>
             </div>
           </div>

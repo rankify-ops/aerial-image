@@ -157,10 +157,10 @@ export function ReviewCarousel() {
               <span className="text-ink">{String(Math.min(i + 1, items.length)).padStart(2, "0")}</span> / {String(items.length).padStart(2, "0")}
             </span>
             <button type="button" onClick={() => go(-1)} disabled={i === 0} aria-label="Previous review" className="flex h-12 w-12 items-center justify-center rounded-full border border-rule-2 text-ink transition-colors hover:border-ink disabled:opacity-30">
-              <Arrow className="rotate-180" />
+              <Arrow className="-rotate-135" />
             </button>
             <button type="button" onClick={() => go(1)} disabled={i >= items.length - 1} aria-label="Next review" className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-paper transition-opacity disabled:opacity-30">
-              <Arrow />
+              <Arrow className="rotate-45" />
             </button>
           </div>
         </div>

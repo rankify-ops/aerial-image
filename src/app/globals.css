@@ -170,7 +170,7 @@
   .btn-glass::before { background: #fff; }
   .btn-glass:hover { color: var(--ink); }
   .btn .arrow { transition: transform 0.4s var(--ease); }
-  .btn:hover .arrow { transform: translateX(4px); }
+  .btn:hover .arrow { transform: translate(2px, -2px); }
 
   /* Frosted glass. */
   .glass {
@@ -198,6 +198,7 @@
   /* OSD overlay on the hero footage. */
   .osd { position: absolute; inset: 0; pointer-events: none; color: #fff; text-shadow: 0 1px 8px rgb(0 0 0 / 0.35); }
   .osd .corner { position: absolute; width: 26px; height: 26px; border-color: rgb(255 255 255 / 0.85); border-style: solid; }
+  @media (max-width: 767px) { .osd .corner { display: none; } }
   .osd .c1 { top: 22px; left: 22px; border-width: 1.5px 0 0 1.5px; }
   .osd .c2 { top: 22px; right: 22px; border-width: 1.5px 1.5px 0 0; }
   .osd .c3 { bottom: 22px; left: 22px; border-width: 0 0 1.5px 1.5px; }
@@ -335,7 +336,7 @@
   }
   .nbtn:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgb(13 15 18 / 0.08), 0 16px 30px -14px rgb(13 15 18 / 0.55); }
   .nbtn .arrow { transition: transform 0.4s var(--ease); }
-  .nbtn:hover .arrow { transform: translateX(3px); }
+  .nbtn:hover .arrow { transform: translate(2px, -2px); }
 
   .scroll-dot { animation: scrollDot 1.8s var(--ease) infinite; }
   @keyframes scrollDot { 0% { transform: translate(-50%, 0); opacity: 1; } 70% { transform: translate(-50%, 12px); opacity: 0; } 100% { opacity: 0; } }
