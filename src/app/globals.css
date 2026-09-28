@@ -503,7 +503,7 @@
       #eeede9;
   }
   .js .preloader { display: block; }
-  /* Head-script failsafe (15s): the loader can never trap the page, even if
+  /* Head-script failsafe (12s): the loader can never trap the page, even if
      the app's JS fails to load. The normal exit finishes well before this. */
   html.pre-failsafe .preloader { display: none !important; }
   html.preloading { overflow: hidden; }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { aheadOf } from "./ui";
 
 /*
  * Minimal loader, shown until the hero footage has buffered enough to play:
@@ -15,8 +14,7 @@ import { aheadOf } from "./ui";
  * the .js class, never holds the page longer than MAX_MS.
  */
 const MIN_MS = 1600;
-const MAX_MS = 7000; // normal ceiling for the counter…
-const HARD_MS = 11000; // …but never reveal a frozen hero before this (head-script failsafe is 15s)
+const MAX_MS = 7000;
 const TARGET_S = 3;
 export function Preloader() {
   const [p, setP] = useState(0);
@@ -31,26 +29,6 @@ export function Preloader() {
     let last = t0;
 
     const video = () => document.querySelector<HTMLVideoElement>("#top video");
-    // Autoplay can be refused (iOS Low Power Mode). Then the poster is what
-    // the page shows, and there's nothing worth waiting for.
-    let blocked = false;
-    video()
-      ?.play()
-      .catch((e: Error) => {
-        if (e.name === "NotAllowedError") blocked = true;
-      });
-    // "Ready" = actually playing, with at least 2.5s more already downloaded
-    // (or the whole file) — so the page never reveals onto a stall.
-    const ready = () => {
-      const v = video();
-      if (!v || blocked) return true;
-      if (v.paused || v.readyState < 3) return false;
-      // Engine not reporting buffered ranges (seen in WebKit): fall back to
-      // "has enough data and is actually advancing".
-      if (v.buffered.length === 0) return v.readyState >= 4 && v.currentTime > 0.5;
-      const end = aheadOf(v, v.currentTime);
-      return end - v.currentTime >= 2.5 || (Number.isFinite(v.duration) && end >= v.duration - 0.25);
-    };
     const target = () => {
       const v = video();
       if (!v) return 0;
@@ -71,17 +49,14 @@ export function Preloader() {
       last = now;
       const real = target();
       const floor = Math.min(0.9, elapsed / MAX_MS);
-      const ok = ready() || elapsed >= HARD_MS;
-      const goal = !ok ? Math.min(0.97, Math.max(real, floor)) : elapsed >= MAX_MS ? 1 : Math.max(real, floor);
+      const goal = elapsed >= MAX_MS ? 1 : Math.max(real, floor);
       shown.current += Math.min(dt * 1.8, (goal - shown.current) * (1 - Math.exp(-dt / 0.16)));
       if (goal >= 1 && shown.current > 0.985) shown.current = 1;
-      if (ok && elapsed >= MAX_MS + 400) shown.current = 1;
+      if (elapsed >= MAX_MS + 400) shown.current = 1;
       setP(shown.current);
 
-      if (!done && shown.current >= 1 && elapsed >= MIN_MS && ok) {
+      if (!done && shown.current >= 1 && elapsed >= MIN_MS) {
         done = true;
-        // Tells heroVideo() to stop measuring/switching: the reveal is committed.
-        document.documentElement.classList.add("pre-done");
         // done 600ms → squares defocus + dip to black 1000ms → reveal 900ms.
         setPhase("armed");
         setTimeout(() => setPhase("exit"), 600);
