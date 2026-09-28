@@ -172,6 +172,39 @@ export function pauseOffscreen(v: HTMLVideoElement | null) {
   return () => io.disconnect();
 }
 
+/**
+ * Ref callback for the three hero videos. <source media> picks portrait vs
+ * 1080p at load, but some browsers (older Chrome/Edge) ignore media on video
+ * sources and take the first one, and a window that loads narrow then gets
+ * maximised keeps the portrait file — either way a desktop shows a stretched,
+ * pixelated crop. This checks what actually loaded, swaps it if wrong, and
+ * swaps again when the window crosses the breakpoint. Also pauses offscreen.
+ */
+export function heroVideo(v: HTMLVideoElement | null) {
+  if (!v) return;
+  const mq = window.matchMedia("(max-width: 767px)");
+  const pick = () => {
+    if (!v.currentSrc) return; // selection hasn't run yet — loadstart calls again
+    const want = asset(mq.matches ? "/video/hero-mobile.mp4" : "/video/hero-1080.mp4");
+    if (new URL(v.currentSrc).pathname === new URL(want, location.href).pathname) return;
+    const wasPlaying = !v.paused || v.autoplay;
+    v.src = want;
+    if (wasPlaying) v.play().catch(() => {});
+  };
+  // The browser may have picked a file before this runs, so check now and at
+  // every stage it could report one.
+  const EVENTS = ["loadstart", "loadedmetadata", "playing"] as const;
+  pick();
+  EVENTS.forEach((e) => v.addEventListener(e, pick));
+  mq.addEventListener("change", pick);
+  const stop = pauseOffscreen(v);
+  return () => {
+    EVENTS.forEach((e) => v.removeEventListener(e, pick));
+    mq.removeEventListener("change", pick);
+    stop?.();
+  };
+}
+
 export function Arrow({ className = "" }: { className?: string }) {
   return (
     <svg width="11" height="11" viewBox="0 0 12 12" fill="none" className={`arrow ${className}`} aria-hidden>

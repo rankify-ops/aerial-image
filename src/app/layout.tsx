@@ -66,7 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-AU" className={`${inter.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: "var d=document.documentElement;d.classList.add('js','preloading');setTimeout(function(){d.classList.remove('preloading')},9000)" }} />
+        <script dangerouslySetInnerHTML={{ __html: "var d=document.documentElement;d.classList.add('js','preloading');setTimeout(function(){d.classList.remove('preloading');d.classList.add('pre-failsafe')},12000)" }} />
         {/* Hero poster = LCP: preload the right one per screen. */}
         <link rel="preload" as="image" type="image/webp" href={asset("/video/hero-poster.webp")} media="(min-width: 768px)" />
         <link rel="preload" as="image" type="image/webp" href={asset("/video/hero-poster-mobile.webp")} media="(max-width: 767px)" />

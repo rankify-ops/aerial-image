@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { licences, site } from "@/content/site";
 import { asset } from "@/lib/basePath";
-import { Arrow, Play, pauseOffscreen } from "../ui";
+import { Arrow, Play, heroVideo } from "../ui";
 import { openVideo } from "../VideoModal";
 import { HeroServices } from "../HeroServices";
 
@@ -91,7 +91,7 @@ export function HeroAlt() {
       <section ref={root} id="top" className="relative h-[100svh] min-h-[560px] p-2.5 sm:min-h-[720px] sm:p-3.5" style={{ "--s": 0 } as React.CSSProperties}>
         <div className="relative h-full overflow-hidden rounded-[22px] bg-ink sm:rounded-[30px]">
           <video
-            ref={pauseOffscreen}
+            ref={heroVideo}
             className="absolute inset-0 h-full w-full object-cover"
             style={{ transform: "scale(calc(1.02 + var(--s) * 0.14))" }}
             autoPlay
