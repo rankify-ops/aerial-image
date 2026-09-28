@@ -68,6 +68,8 @@ export function Header() {
   useEffect(() => () => clearTimeout(timer.current), []);
 
   // Always glass — Tom wants the pill visible from the very top, not only once scrolled.
+  // Never transition backdrop-filter (no transition-all here): animating the blur over
+  // the hero footage froze the video on real GPUs (Chrome, Windows) at ~3.4s.
   const solid = true;
 
   return (
@@ -87,7 +89,7 @@ export function Header() {
         onMouseLeave={() => mega && menu && hide(180)}
       >
         <div
-          className={`flex h-[62px] items-center justify-between gap-6 rounded-full pl-5 pr-2 transition-all duration-500 ${
+          className={`flex h-[62px] items-center justify-between gap-6 rounded-full pl-5 pr-2 transition-[background-color,border-color,box-shadow] duration-500 ${
             solid ? "glass" : "border border-transparent"
           }`}
         >
