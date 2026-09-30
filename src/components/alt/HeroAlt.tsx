@@ -205,7 +205,7 @@ export function HeroAlt() {
               <a href="#contact" className="btn glass w-full text-ink">
                 Work with us <Arrow />
               </a>
-              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-white w-full">
+              <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-primary w-full">
                 <Play size={11} /> Watch Showreel
               </button>
             </div>
