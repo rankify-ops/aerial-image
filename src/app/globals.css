@@ -715,3 +715,15 @@ button:not(:disabled), [role="button"], [role="tab"], [role="switch"], label[for
 
 /* Closed mega sheet: no blur layer sitting over the page. */
 .mega-sheet:not(.is-open) { backdrop-filter: none; }
+
+/* Touch screens: no hover sweep on any button. :hover sticks after a tap or
+   hold on phones, which filled buttons black/navy and hid their text. Buttons
+   keep their resting look; the sweep stays for mouse hover on desktop. */
+@media not ((hover: hover) and (pointer: fine)) {
+  .btn::before { display: none; }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--rule-2); }
+  .btn-white:hover { color: var(--ink); border-color: var(--rule); }
+  .btn-glass:hover { color: #fff; }
+  .btn.glass:hover { color: var(--ink); }
+  .btn:hover .arrow { transform: none; }
+}
