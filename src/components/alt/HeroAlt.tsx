@@ -202,7 +202,7 @@ export function HeroAlt() {
             {/* Frosted-glass panel, like a quote form: showreel + the 8 service buttons */}
             {/* Phones/tablets: two full-width buttons over the footage, no panel. */}
             <div className="grid gap-2.5 lg:hidden">
-              <a href="#contact" className="btn btn-primary w-full">
+              <a href="#contact" className="btn glass w-full text-ink">
                 Work with us <Arrow />
               </a>
               <button type="button" onClick={() => openVideo(site.showreel, "2024 Showreel")} className="btn btn-white w-full">

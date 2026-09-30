@@ -172,6 +172,10 @@
   .btn-white { color: var(--ink); background: #fff; border-color: var(--rule); }
   .btn-white::before { background: var(--ink); }
   .btn-white:hover { color: var(--paper); border-color: var(--ink); }
+  /* Glass button — same frosted pill as the header (.glass supplies the look). */
+  .btn.glass { color: var(--ink); }
+  .btn.glass::before { background: var(--ink); }
+  .btn.glass:hover { color: var(--paper); }
   .btn .arrow { transition: transform 0.4s var(--ease); }
   .btn:hover .arrow { transform: translate(2px, -2px); }
 
